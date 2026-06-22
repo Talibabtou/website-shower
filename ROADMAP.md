@@ -17,11 +17,12 @@ Goal: help an agent find TypeScript type and constant organization issues, then 
 - [x] Filter noisy Next.js route handler exports like `export const GET`.
 - [x] Smoke test the scanner on this repo.
 - [x] Smoke test the scanner on one local TypeScript repo.
+- [x] Add a tiny fixture repo under `examples/fixture/`.
+- [x] Add a script smoke test that asserts key scanner sections appear.
+- [x] Update the skill to make read-only audit mode explicit.
 
 ## Next
 
-- [ ] Add a tiny fixture repo under `examples/fixture/` or `tests/fixtures/`.
-- [ ] Add a script smoke test that asserts key scanner sections appear.
 - [ ] Run one full manual audit using scanner output.
 - [ ] Revise `SKILL.md` and references from that audit report.
 - [ ] Confirm the skill can produce 5-15 useful findings without editing files.

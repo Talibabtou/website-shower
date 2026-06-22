@@ -30,11 +30,12 @@ IGNORE_SOURCE="repo ignore files"
 
 if command -v git >/dev/null 2>&1 && git -C "$TARGET" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   repo_root="$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || true)"
-  if [ -z "$repo_root" ] || [ ! -f "$repo_root/.gitignore" ]; then
+  if [ -z "$repo_root" ] ||
+    { [ ! -f "$repo_root/.gitignore" ] && [ ! -f "$TARGET/.gitignore" ] && [ ! -f "$TARGET/.ignore" ]; }; then
     IGNORE_GLOBS=("${FALLBACK_IGNORE_GLOBS[@]}")
     IGNORE_SOURCE="fallback generated-folder globs"
   fi
-elif [ ! -f "$TARGET/.gitignore" ]; then
+elif [ ! -f "$TARGET/.gitignore" ] && [ ! -f "$TARGET/.ignore" ]; then
   IGNORE_GLOBS=("${FALLBACK_IGNORE_GLOBS[@]}")
   IGNORE_SOURCE="fallback generated-folder globs"
 fi
@@ -101,7 +102,7 @@ for dir in src app pages features domains packages apps; do
 done
 
 section "Candidate type and constant files"
-files | rg '(^|/)(types|constants|enums|status|statuses|roles|variants|modes|config)\.(ts|tsx)$' || true
+files | rg '(^|/)(types|constants|contracts|enums|status|statuses|roles|variants|modes|config)\.(ts|tsx)$' || true
 
 section "Large candidate files"
 files |
@@ -137,12 +138,12 @@ scan '(^|export[[:space:]]+)?const[[:space:]]+[A-Z][A-Z0-9_]+[[:space:]]*=' |
   true
 
 section "Imports from type/constant barrels"
-scan 'from[[:space:]]+["'\''][^"'\'']*(types|constants|enums|status|statuses|roles|variants|modes|config)[^"'\'']*["'\'']'
+scan 'from[[:space:]]+["'\''][^"'\'']*(types|constants|contracts|enums|status|statuses|roles|variants|modes|config)[^"'\'']*["'\'']'
 
 literal_tmp="$(mktemp "${TMPDIR:-/tmp}/types-constants-literals.XXXXXX")"
 trap 'rm -f "$literal_tmp"' EXIT
 
-scan --only-matching '["'\''](draft|published|pending|approved|rejected|active|inactive|enabled|disabled|archived|deleted|admin|moderator|user|owner|viewer|editor|success|error|warning|info|primary|secondary|default|compact|expanded|create|read|update|delete|view|edit|public|private)["'\'']' > "$literal_tmp"
+scan --only-matching '["'\''](draft|published|pending|queued|done|approved|rejected|active|inactive|enabled|disabled|archived|deleted|failed|admin|moderator|user|owner|viewer|editor|success|error|warning|info|primary|secondary|default|compact|expanded|create|read|update|delete|view|edit|public|private)["'\'']' > "$literal_tmp"
 
 section "Repeated domain literals"
 awk -F: '

@@ -5,7 +5,7 @@ description: Audit and organize TypeScript type files, constant files, literal u
 
 # Types Constants Audit
 
-Use this skill to produce a repo-grounded audit report. Do not refactor unless the user asks for edits.
+Use this skill to produce a repo-grounded audit report. Default to read-only inspection: do not edit files unless the user explicitly asks for fixes.
 
 ## Workflow
 
@@ -28,12 +28,12 @@ When running manual searches, let `rg` honor the repo's `.gitignore` first. If t
 Manual candidate searches:
 
 ```bash
-rg --files | rg '(^|/)(types|constants|enums|status|statuses|roles|variants|config)\.(ts|tsx)$'
+rg --files | rg '(^|/)(types|constants|contracts|enums|status|statuses|roles|variants|config)\.(ts|tsx)$'
 rg "type [A-Za-z0-9_]+\\s*=" .
 rg "interface [A-Za-z0-9_]+" .
 rg "as const" .
 rg "const [A-Z0-9_]+\\s*=" .
-rg "'(draft|published|pending|approved|rejected|active|inactive|admin|moderator|user|owner|viewer|editor|success|error|warning|info)'" .
+rg "'(draft|published|pending|queued|done|approved|rejected|active|inactive|failed|admin|moderator|user|owner|viewer|editor|success|error|warning|info)'" .
 ```
 
 3. For each candidate, inspect usage before recommending movement:
@@ -51,6 +51,7 @@ rg "from ['\"].*(types|constants|enums)" .
    - stale export
    - fake reuse that should stay inline
    - constant that hurts readability
+   - drifted local contract that should use an existing owner
 5. Apply placement rules from `references/placement-rules.md` when the location is not obvious.
 6. Format findings with `references/report-format.md`.
 
@@ -66,6 +67,8 @@ Delete stale exports before moving code.
 
 Do not turn readable literals into named constants just to remove all strings. `aria-label="Close"`, `type="button"`, route segment names, HTTP method strings, and test names often read better inline.
 
+Repeated names are leads, not findings. `Props`, CVA `default` variants, JSX labels, and local UI option strings can be legitimate. Confirm drift by checking shape, ownership, and usage.
+
 ## What To Report
 
 Prioritize findings that reduce confusion:
@@ -75,6 +78,9 @@ Prioritize findings that reduce confusion:
 - constants imported far from their owner
 - exported symbols with no runtime or type usage
 - values promoted to global before real shared ownership exists
+- store-derived types duplicated by hand-written aliases or interfaces
+- event payload contracts duplicated between hooks, slices, and services
+- repeated status/team/result unions that cross Redux, hooks, and UI
 
 Skip low-value noise:
 - one-off JSX labels
@@ -108,3 +114,11 @@ If the user asks for edits:
 - avoid broad folder rewrites
 
 Do not introduce a new shared file if an existing local owner is clearer.
+
+## Skill Test Fixture
+
+Use `examples/fixture` for scanner smoke testing only. It intentionally uses anonymous names and includes duplicated state types, repeated status/side unions, duplicated event contracts, duplicated local data, and one benign UI `default` literal.
+
+```bash
+scripts/smoke-test.sh
+```
