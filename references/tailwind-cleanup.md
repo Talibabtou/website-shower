@@ -1,6 +1,6 @@
 # Tailwind Cleanup Audit
 
-Use this module when Tailwind is present. If Tailwind is absent but CSS exists, report Tailwind migration only as an optional setup lead.
+Use this module for Tailwind and CSS design-system cleanup. If Tailwind is present, audit Tailwind plus raw CSS. If Tailwind is absent but CSS exists, report Tailwind migration only as an optional setup lead and still audit CSS drift.
 
 ## Tool
 
@@ -24,6 +24,7 @@ The scanner reports leads for:
 - duplicate utilities in one class list
 - class composition helpers such as `cn`, `clsx`, `cva`, and `tailwind-merge`
 - `@apply` and custom component CSS
+- CSS token definitions, raw values, selectors, and repeated raw values
 - CSS-to-Tailwind migration leads when CSS exists and Tailwind is absent
 
 ## Source Basis
@@ -45,6 +46,8 @@ Strong signals:
 - class names are built with interpolation, for example `bg-${color}-600`
 - same arbitrary value appears in several components
 - hard-coded hex, pixel, radius, or shadow values repeat across owned UI
+- CSS files repeat colors, spacing, radius, shadow, or typography values that should be theme tokens
+- one-off CSS classes duplicate component variants already modeled in Tailwind or shared UI code
 - class lists are long enough that intent and conflicts are hard to review
 - duplicate utilities conflict or add noise, such as two `px-*` values in one class list
 - a shared component repeats the same styling pattern instead of owning it
@@ -67,6 +70,7 @@ rg "tailwindcss|@tailwind|@theme|@source" <target>
 rg "className=" <target>
 rg "\[[^]]+\]" <target>
 rg "bg-\\$\\{|text-\\$\\{|className=.*\\$\\{" <target>
+rg --glob "*.css" "#[0-9a-fA-F]{3,8}|[0-9]+px|rgba?\\(" <target>
 ```
 
 Good tasks name the smallest cleanup: replace dynamic class construction with a static variant map, move repeated arbitrary values into a theme token, add missing source coverage, split a class-heavy repeated pattern into a component, or suggest a Tailwind migration only when CSS drift makes it worth the cost.

@@ -61,22 +61,79 @@ has_css_source() {
     rg --quiet '.'
 }
 
+print_css_design_system_leads() {
+  section "CSS files"
+  rg --files "$TARGET" \
+    --glob '*.css' \
+    --glob '!**/node_modules/**' \
+    --glob '!**/dist/**' \
+    --glob '!**/build/**' 2>/dev/null | limit_output || true
+
+  section "CSS token definitions"
+  rg --color never --line-number \
+    --glob '*.css' \
+    --glob '!**/node_modules/**' \
+    --glob '!**/dist/**' \
+    --glob '!**/build/**' \
+    '(^|[[:space:]])--(color|spacing|radius|font|text|shadow|breakpoint|[A-Za-z0-9_-]+)[[:space:]]*:' \
+    "$TARGET" 2>/dev/null | limit_output || true
+
+  section "CSS raw value leads"
+  rg --color never --line-number \
+    --glob '*.css' \
+    --glob '!**/node_modules/**' \
+    --glob '!**/dist/**' \
+    --glob '!**/build/**' \
+    '(#[0-9a-fA-F]{3,8}|[0-9]+px|[0-9]+rem|rgba?\([^)]*\)|box-shadow:[^;]+|border-radius:[^;]+)' \
+    "$TARGET" 2>/dev/null | limit_output || true
+
+  section "CSS selector leads"
+  rg --color never --line-number \
+    --glob '*.css' \
+    --glob '!**/node_modules/**' \
+    --glob '!**/dist/**' \
+    --glob '!**/build/**' \
+    '^\.[A-Za-z0-9_-]+[[:space:]]*\{' \
+    "$TARGET" 2>/dev/null | limit_output || true
+
+  section "Repeated CSS raw values"
+  rg --color never --only-matching \
+    --glob '*.css' \
+    --glob '!**/node_modules/**' \
+    --glob '!**/dist/**' \
+    --glob '!**/build/**' \
+    '(#[0-9a-fA-F]{3,8}|[0-9]+px|[0-9]+rem|rgba?\([^)]*\))' \
+    "$TARGET" 2>/dev/null |
+    awk '
+      {
+        value = $0
+        count[value] += 1
+      }
+      END {
+        found = 0
+        for (value in count) {
+          if (count[value] > 1) {
+            found = 1
+            printf "%s appears %d times\n", value, count[value]
+          }
+        }
+        if (!found) {
+          print "No repeated CSS raw values found."
+        }
+      }
+    ' | limit_output
+}
+
 section "Target"
 printf '%s\n' "$TARGET"
 
 if ! is_tailwind_project; then
   section "Tailwind"
-  printf 'Tailwind not detected; skipping Tailwind cleanup audit.\n'
+  printf 'Tailwind not detected; skipping Tailwind-specific cleanup audit.\n'
   if has_css_source; then
     section "CSS migration leads"
     printf 'CSS files detected without Tailwind. Consider a Tailwind transition only if the repo has repeated design tokens, utility-like CSS, or component style drift.\n'
-    rg --color never --line-number \
-      --glob '*.css' \
-      --glob '!**/node_modules/**' \
-      --glob '!**/dist/**' \
-      --glob '!**/build/**' \
-      '(^\.[A-Za-z0-9_-]+|#[0-9a-fA-F]{3,8}|[0-9]+px|var\(--)' \
-      "$TARGET" 2>/dev/null | limit_output || true
+    print_css_design_system_leads
   fi
   exit 0
 fi
@@ -146,9 +203,11 @@ run_rg '\b(cn|clsx|cva|twMerge|tailwind-merge)\b'
 section "Apply and custom CSS leads"
 run_rg '(@apply|@layer[[:space:]]+components|@layer[[:space:]]+utilities)'
 
+print_css_design_system_leads
+
 cat <<'NOTE'
 
 == Notes ==
-This script prints Tailwind cleanup candidates only. Confirm Tailwind version, source detection,
-theme ownership, and component ownership before reporting a task.
+This script prints Tailwind and CSS design-system candidates only. Confirm Tailwind version,
+source detection, theme ownership, CSS ownership, and component ownership before reporting a task.
 NOTE

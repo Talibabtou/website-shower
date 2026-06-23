@@ -4,9 +4,9 @@ Fixture report generated from read-only scanner output. No audited files were ch
 
 ## Summary
 
-- Total tasks: 16
-- Safe first cleanup: `WS-016`
-- Needs human decision: `WS-001`, `WS-002`, `WS-013`, `WS-015`
+- Total tasks: 23
+- Safe first cleanup: `WS-023`
+- Needs human decision: `WS-001`, `WS-002`, `WS-003`, `WS-004`, `WS-011`, `WS-012`, `WS-013`, `WS-016`, `WS-020`, `WS-022`
 - Commands used:
 
 ```bash
@@ -44,7 +44,35 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run typecheck and visually check affected components if files move.
   Permission: required
 
-- [ ] WS-003 Replace unsafe input escape hatch
+- [ ] WS-003 Stop importing package internals from the app
+  Module: monorepo-ownership
+  Confidence: high
+  Files:
+  - `examples/fixture/apps/web/src/useShared.ts:2`
+  - `examples/fixture/packages/shared/src/internal.ts:1`
+  Why:
+  The app imports `@fixture/shared/internal`, which reaches past the shared package public entrypoint. That makes package ownership unclear and can break if the package later tightens its exports.
+  Safe action:
+  Either export the needed label map from `@fixture/shared` as a public API, or keep the label ownership inside the app if it is app-specific.
+  Validation:
+  Run typecheck for the app and shared package after changing imports.
+  Permission: required
+
+- [ ] WS-004 Use the shared package contract instead of repeating it in the app
+  Module: monorepo-ownership
+  Confidence: high
+  Files:
+  - `examples/fixture/apps/web/src/useShared.ts:4`
+  - `examples/fixture/packages/shared/src/index.ts:1`
+  Why:
+  `SharedStatus` is declared in both the app and shared package. Since the app already depends on the package, this is a cross-package drift lead.
+  Safe action:
+  Import `SharedStatus` from `@fixture/shared` in the app, or move the type back to the app if the package does not truly own it.
+  Validation:
+  Run typecheck and confirm package exports allow the type import.
+  Permission: required
+
+- [ ] WS-005 Replace unsafe input escape hatch
   Module: typescript-hygiene
   Confidence: medium
   Files:
@@ -58,7 +86,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run typecheck and add the smallest unit test if this boundary handles external input.
   Permission: required
 
-- [ ] WS-004 Add repeatable checker guardrails
+- [ ] WS-006 Add repeatable checker guardrails
   Module: typescript-hygiene
   Confidence: medium
   Files:
@@ -71,7 +99,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run the new scripts once and record any rule that must stay disabled during migration.
   Permission: required
 
-- [ ] WS-005 Split client behavior out of the route page
+- [ ] WS-007 Split client behavior out of the route page
   Module: react-next-habits
   Confidence: high
   Files:
@@ -86,7 +114,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run typecheck and the smallest Next build or route smoke check.
   Permission: required
 
-- [ ] WS-006 Name repeated item route literals
+- [ ] WS-008 Name repeated item route literals
   Module: react-next-habits
   Confidence: medium
   Files:
@@ -101,7 +129,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Check generated links and route tests, if the repo has them.
   Permission: required
 
-- [ ] WS-007 Replace dynamic Tailwind class construction
+- [ ] WS-009 Replace dynamic Tailwind class construction
   Module: tailwind-cleanup
   Confidence: high
   Files:
@@ -114,7 +142,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run the app build or Tailwind build and inspect the component state that uses each variant.
   Permission: required
 
-- [ ] WS-008 Promote repeated arbitrary values to Tailwind tokens
+- [ ] WS-010 Promote repeated arbitrary values to Tailwind tokens
   Module: tailwind-cleanup
   Confidence: medium
   Files:
@@ -130,7 +158,55 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run the formatter and visual smoke check for the affected components.
   Permission: required
 
-- [ ] WS-009 Consolidate create-item API contracts
+- [ ] WS-011 Split `DashboardPanel` responsibilities
+  Module: component-hygiene
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/components/DashboardPanel.tsx:1`
+  - `examples/fixture/src/components/DashboardPanel.tsx:15`
+  - `examples/fixture/src/components/DashboardPanel.tsx:20`
+  - `examples/fixture/src/components/DashboardPanel.tsx:32`
+  Why:
+  One client component owns fetching, loading/error/empty states, variant props, dynamic import, image rendering, and list rendering.
+  Safe action:
+  Confirm the desired owner first. A likely cleanup is to move data loading to a feature/API owner, keep UI variants local, and reuse a small status-state component if the pattern repeats.
+  Validation:
+  Run typecheck and a visual smoke check for loading, error, empty, and populated states.
+  Permission: required
+
+- [ ] WS-012 Name item data-fetching policy
+  Module: data-fetching-hygiene
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/components/DashboardPanel.tsx:20`
+  - `examples/fixture/src/features/items/api.ts:15`
+  - `examples/fixture/src/features/items/queries.ts:4`
+  - `examples/fixture/src/features/items/queries.ts:5`
+  Why:
+  `/api/items` is fetched from multiple places, and `cache: 'no-store'` appears as a raw policy. JSON parsing also relies on casts instead of validation.
+  Safe action:
+  Pick one feature-owned API client or query owner, name the cache policy if it is shared, and validate external JSON at the boundary.
+  Validation:
+  Run typecheck and one route/client test, or add a small invalid-response check if none exists.
+  Permission: required
+
+- [ ] WS-013 Check client-side performance pressure in `DashboardPanel`
+  Module: performance-hygiene
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/components/DashboardPanel.tsx:1`
+  - `examples/fixture/src/components/DashboardPanel.tsx:12`
+  - `examples/fixture/src/components/DashboardPanel.tsx:47`
+  - `examples/fixture/src/components/DashboardPanel.tsx:49`
+  Why:
+  The component is client-only, dynamically imports a child, renders raw images, and maps an unbounded list. These are performance leads until route behavior and list size are checked.
+  Safe action:
+  Confirm whether the component needs to be client-only. If not, split a small client child, use the framework image path where appropriate, and add pagination or a limit when list size is unbounded.
+  Validation:
+  Run the app build or bundle check, then smoke test the populated list state.
+  Permission: required
+
+- [ ] WS-014 Consolidate create-item API contracts
   Module: api-contracts
   Confidence: high
   Files:
@@ -147,7 +223,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run typecheck and one route/client test, or add a small contract test if none exists.
   Permission: required
 
-- [ ] WS-010 Validate create-item request body before use
+- [ ] WS-015 Validate create-item request body before use
   Module: api-contracts
   Confidence: medium
   Files:
@@ -160,7 +236,40 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Test a valid request and one invalid body.
   Permission: required
 
-- [ ] WS-011 Deduplicate `WorkItem`
+- [ ] WS-016 Pick one workflow lifecycle name
+  Module: naming-drift
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/features/items/workflow.ts:1`
+  - `examples/fixture/src/feature/workflowPhase.ts:1`
+  - `examples/fixture/src/state/contracts.ts:5`
+  Why:
+  The same values, `'draft' | 'active' | 'archived'`, appear as `ItemStatus`, `ItemPhase`, and `ProcessStep`. This may be one lifecycle with three names.
+  Safe action:
+  Confirm ownership first. If these values describe the same item workflow, pick one term and expose it from the owner. If they describe separate lifecycles, leave them separate and document the distinction.
+  Validation:
+  Run typecheck and search for all three names before any rename.
+  Permission: required
+
+- [ ] WS-017 Clean package metadata drift
+  Module: dependency-hygiene
+  Confidence: medium
+  Files:
+  - `examples/fixture/package.json:6`
+  - `examples/fixture/package.json:7`
+  - `examples/fixture/package.json:8`
+  - `examples/fixture/package.json:11`
+  - `examples/fixture/package-lock.json:1`
+  - `examples/fixture/pnpm-workspace.yaml:1`
+  Why:
+  The fixture has a workspace file and an npm lock file, both `clsx` and `classnames`, `typescript` in runtime dependencies, and `react` in dev dependencies. These are cleanup leads, not deletion proof.
+  Safe action:
+  Pick one package manager policy, keep one class-name helper, move tooling to `devDependencies`, and keep runtime app packages in `dependencies`.
+  Validation:
+  Run install, typecheck, and a usage search before deleting or moving any package.
+  Permission: required
+
+- [ ] WS-018 Deduplicate `WorkItem`
   Module: state-domain-contracts
   Confidence: high
   Files:
@@ -174,7 +283,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run the repo typecheck after import updates.
   Permission: required
 
-- [ ] WS-012 Name and reuse `WorkStatus`
+- [ ] WS-019 Name and reuse `WorkStatus`
   Module: state-domain-contracts
   Confidence: high
   Files:
@@ -188,7 +297,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run typecheck and confirm selectors still compare the same values.
   Permission: required
 
-- [ ] WS-013 Consolidate preview worker messages
+- [ ] WS-020 Consolidate preview worker messages
   Module: types-constants
   Confidence: high
   Files:
@@ -204,7 +313,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run typecheck and manually confirm message strings are unchanged.
   Permission: required
 
-- [ ] WS-014 Import `DomainEvent` from the owner
+- [ ] WS-021 Import `DomainEvent` from the owner
   Module: state-domain-contracts
   Confidence: high
   Files:
@@ -218,7 +327,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run typecheck.
   Permission: required
 
-- [ ] WS-015 Decide whether `ResourceMap` is shared production shape
+- [ ] WS-022 Decide whether `ResourceMap` is shared production shape
   Module: types-constants
   Confidence: medium
   Files:
@@ -232,7 +341,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Check file ownership before editing.
   Permission: required
 
-- [ ] WS-016 Remove stale env helpers
+- [ ] WS-023 Remove stale env helpers
   Module: unused-code
   Confidence: medium
   Files:

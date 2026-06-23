@@ -1,13 +1,13 @@
 ---
 name: types-constants-audit
-description: Audit website repos for file-tree drift, TypeScript type and constant drift, unused-code leads, TypeScript escape hatches, React/Next.js habit drift, Tailwind cleanup, API contract hygiene, state/domain contract hygiene, stale exports, and cleanup tasks. Use when asked for Website Shower, website maintenance audit, cleanup checklist, file-tree hygiene, duplicated types/constants, magic values, unused code, TypeScript hygiene, React/Next habits, Tailwind cleanup, API contracts, state contracts, domain contracts, or read-only repo cleanup.
+description: Audit website repos for file-tree drift, monorepo ownership drift, naming drift, dependency hygiene, TypeScript type and constant drift, unused-code leads, TypeScript escape hatches, React/Next.js habit drift, Tailwind and CSS cleanup, component hygiene, API contract hygiene, data-fetching hygiene, state/domain contract hygiene, performance leads, stale exports, and cleanup tasks. Use when asked for Website Shower, website maintenance audit, cleanup checklist, file-tree hygiene, monorepo ownership, naming drift, dependencies, duplicated types/constants, magic values, unused code, TypeScript hygiene, React/Next habits, Tailwind cleanup, CSS cleanup, component cleanup, API contracts, data fetching, performance, state contracts, domain contracts, or read-only repo cleanup.
 ---
 
 # Website Shower
 
 Audit website maintenance issues from repo evidence. Default mode is read-only: produce findings and recommendations, but do not edit files unless the user explicitly asks for fixes.
 
-Website Shower coordinates multiple read-only website maintenance audits into a Markdown TODO report. Current modules cover file-tree hygiene, TypeScript hygiene, React/Next.js habits, Tailwind cleanup, API contracts, state/domain contracts, types/constants ownership, and unused-code leads.
+Website Shower coordinates multiple read-only website maintenance audits into a Markdown TODO report. Current modules cover file-tree hygiene, monorepo ownership, TypeScript hygiene, React/Next.js habits, Tailwind and CSS cleanup, component hygiene, API contracts, data-fetching hygiene, state/domain contracts, naming drift, dependency hygiene, performance hygiene, types/constants ownership, and unused-code leads.
 
 ## Workflow
 
@@ -27,22 +27,34 @@ scripts/scan-website-shower.sh packages/example-domain
 
 3. Read scanner output in this order:
    - File-tree hygiene: app layout, packages, feature folders, generated folders, junk drawers, route shape.
+   - Monorepo ownership: workspace packages, public exports, deep imports, shared package boundaries.
    - TypeScript hygiene: checker setup, `any`, unsafe casts, JS migration leftovers, formatting and lint guardrails.
    - React/Next.js habits: app shape, server/client boundaries, metadata, route literals, fetch policy.
    - Tailwind cleanup: Tailwind presence, source coverage, dynamic classes, arbitrary values, duplicate utilities, CSS transition leads.
+   - Component hygiene: large components, variant props, repeated loading/error/empty states, client/server work mix.
    - API contracts: routes, clients, schemas, mocks, request parsing, response shapes.
+   - Data-fetching hygiene: query keys, cache policy, fetch wrappers, JSON validation, client/server fetching mix.
    - State/domain contracts: store state, selectors, event payloads, status machines, action names.
+   - Naming drift: same concept named with different words such as `status`, `state`, `phase`, `mode`, `kind`, or `type`.
+   - Dependency hygiene: package managers, dependency blocks, duplicate dependency families, workspace links.
+   - Performance hygiene: client boundaries, dynamic imports, raw images, large components, unbounded lists.
    - Types/constants ownership: repeated contracts, literal unions, raw domain values, barrels, junk drawers.
    - Unused code: stale exports and deletion leads after framework and public API context is known.
 4. If the global scanner is unavailable, run focused scanners manually:
 
 ```bash
 scripts/scan-file-tree-hygiene.sh .
+scripts/scan-monorepo-ownership.sh .
 scripts/scan-typescript-hygiene.sh .
 scripts/scan-react-next-habits.sh .
 scripts/scan-tailwind-cleanup.sh .
+scripts/scan-component-hygiene.sh .
 scripts/scan-api-contracts.sh .
+scripts/scan-data-fetching-hygiene.sh .
 scripts/scan-state-domain-contracts.sh .
+scripts/scan-naming-drift.sh .
+scripts/scan-dependency-hygiene.sh .
+scripts/scan-performance-hygiene.sh .
 scripts/scan-types-constants.sh .
 scripts/scan-unused-code.sh .
 ```
@@ -64,12 +76,18 @@ Quote paths with shell-special characters when inspecting files directly, especi
 
 6. Classify each task:
    - unclear file-tree boundary
+   - unclear package ownership boundary
    - missing checker guardrail
    - unsafe TypeScript escape hatch
    - framework boundary drift
    - styling token or utility drift
+   - component shape drift
    - duplicated API contract
+   - data-fetching ownership drift
    - duplicated state or domain contract
+   - naming drift for the same domain concept
+   - dependency drift or duplicate package family
+   - performance risk lead
    - duplicated type shape
    - duplicated literal union
    - repeated magic string or number
@@ -81,11 +99,17 @@ Quote paths with shell-special characters when inspecting files directly, especi
 7. Apply the relevant reference before reporting:
    - `references/audit-orchestrator.md`
    - `references/file-tree-hygiene.md`
+   - `references/monorepo-ownership.md`
    - `references/typescript-hygiene.md`
    - `references/react-next-habits.md`
    - `references/tailwind-cleanup.md`
+   - `references/component-hygiene.md`
    - `references/api-contracts.md`
+   - `references/data-fetching-hygiene.md`
    - `references/state-domain-contracts.md`
+   - `references/naming-drift.md`
+   - `references/dependency-hygiene.md`
+   - `references/performance-hygiene.md`
    - `references/placement-rules.md`
    - `references/audit-heuristics.md`
    - `references/unused-code.md`
@@ -117,8 +141,14 @@ Prioritize findings that reduce confusion:
 - JavaScript migration leftovers in typed source folders
 - React/Next server-client boundary drift, route literal drift, and repeated fetch policy
 - Tailwind source/config drift, dynamic class construction, repeated arbitrary values, and duplicate utilities
+- Oversized components, repeated UI states, variant prop drift, or client components doing server-like work
 - API request/response contracts duplicated across routes, clients, schemas, mocks, and tests
+- Query key drift, cache policy repetition, duplicated fetch wrappers, or unvalidated fetched JSON
 - Store state, event payloads, selector return types, status machines, or action names duplicated across owners
+- Feature-private imports, premature shared packages, and cross-package contract drift
+- One concept named differently across owners, for example `status` in one file and `phase` in another
+- Mixed package managers, duplicate dependency families, or packages in the wrong dependency block
+- Performance leads such as needless client boundaries, raw images, unbounded lists, or heavy imports
 
 Skip low-value noise:
 - one-off JSX labels, route segments, HTTP method strings, and framework syntax

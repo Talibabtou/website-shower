@@ -13,15 +13,21 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh /path/to/repo
 `scan-website-shower.sh` runs modules in this order:
 
 1. `scan-file-tree-hygiene.sh`
-2. `scan-typescript-hygiene.sh`
-3. `scan-react-next-habits.sh`
-4. `scan-tailwind-cleanup.sh`
-5. `scan-api-contracts.sh`
-6. `scan-state-domain-contracts.sh`
-7. `scan-types-constants.sh`
-8. `scan-unused-code.sh`
+2. `scan-monorepo-ownership.sh`
+3. `scan-typescript-hygiene.sh`
+4. `scan-react-next-habits.sh`
+5. `scan-tailwind-cleanup.sh`
+6. `scan-component-hygiene.sh`
+7. `scan-api-contracts.sh`
+8. `scan-data-fetching-hygiene.sh`
+9. `scan-state-domain-contracts.sh`
+10. `scan-naming-drift.sh`
+11. `scan-dependency-hygiene.sh`
+12. `scan-performance-hygiene.sh`
+13. `scan-types-constants.sh`
+14. `scan-unused-code.sh`
 
-The order is deliberate. File-tree shape gives the first map of apps, packages, feature folders, generated output, and junk drawers. Checker setup and framework shape change how later leads should be judged. API routes and state owners clarify contract placement. Type and constant placement is easier once those owners are known. Unused-code leads come last because framework entrypoints, generated boundaries, public exports, and route conventions can make raw usage counts noisy.
+The order is deliberate. File-tree shape gives the first map of apps, packages, feature folders, generated output, and junk drawers. Monorepo ownership clarifies public package boundaries before later modules judge imports and shared contracts. Checker setup and framework shape change how later leads should be judged. UI, API, data, state, naming, dependency, and performance sections identify the main owners before type placement work. Unused-code leads come last because framework entrypoints, generated boundaries, public exports, and route conventions can make raw usage counts noisy.
 
 The global scanner only gathers candidates. Convert the output into a checklist report with file paths, confidence, safe action, validation, and permission status before editing anything.
 
@@ -41,6 +47,20 @@ Finds repo-shape and ownership-boundary leads:
 - route layout and unusually deep source files
 
 Use `references/file-tree-hygiene.md` before reporting a task. File-tree output should guide later modules; it is not proof that a file should move.
+
+### `scan-monorepo-ownership.sh`
+
+Finds monorepo ownership leads:
+
+- workspace config and package manifests
+- workspace package names
+- cross-package imports
+- deep imports into package internals
+- broad shared packages
+- app-level junk drawers
+- repeated contract names across apps and packages
+
+Use `references/monorepo-ownership.md` before reporting a task. Deep imports and broad shared folders are leads until package exports and workspace policy are checked.
 
 ### `scan-types-constants.sh`
 
@@ -108,6 +128,18 @@ Finds Tailwind cleanup leads when Tailwind is present:
 
 If Tailwind is absent but CSS exists, the script prints an optional CSS-to-Tailwind transition lead. Recommend that only when CSS shows repeated design tokens, utility-like classes, or component style drift.
 
+### `scan-component-hygiene.sh`
+
+Finds component hygiene leads:
+
+- large TSX/JSX component files
+- prop unions that may want named variants
+- repeated loading, error, and empty states
+- client components doing fetch or server-like work
+- repeated UI patterns such as raw images, repeated class blocks, and list renders
+
+Use `references/component-hygiene.md` before reporting a task. Component output needs ownership and UX judgment before recommending a split.
+
 ### `scan-api-contracts.sh`
 
 Finds API contract hygiene leads:
@@ -124,6 +156,19 @@ API contract findings need judgment. Strong tasks usually have the same contract
 
 Good outcomes name one owner: route-local schema, feature API model, generated SDK, or shared domain schema. Do not create a global API types file unless unrelated features truly share the contract.
 
+### `scan-data-fetching-hygiene.sh`
+
+Finds data-fetching hygiene leads:
+
+- fetch, query, SWR, axios, and ky calls
+- query key declarations
+- repeated cache policies
+- fetch wrapper functions
+- `response.json()` and cast-based parsing
+- client/server fetching mix
+
+Use `references/data-fetching-hygiene.md` before reporting a task. Cache and validation findings need framework context and runtime boundary checks.
+
 ### `scan-state-domain-contracts.sh`
 
 Finds state and domain contract leads:
@@ -135,6 +180,45 @@ Finds state and domain contract leads:
 - event and action string literals that may need an owner
 
 Use `references/state-domain-contracts.md` before reporting a task. State output is strongest when a contract crosses store, feature, route, worker, or API boundaries.
+
+### `scan-naming-drift.sh`
+
+Finds naming drift leads:
+
+- `status`, `state`, `phase`, `mode`, `kind`, `type`, `variant`, and `step` words
+- type, field, and function names using those words
+- literal unions tied to naming words
+- same literal sets with different type names
+- same type prefix with different convention words
+
+Use `references/naming-drift.md` before reporting a task. Different names can be correct when they describe different lifecycles.
+
+### `scan-dependency-hygiene.sh`
+
+Finds dependency hygiene leads:
+
+- package manager and lockfile signals
+- package manifests and dependency blocks
+- imported package names
+- tooling packages in runtime `dependencies`
+- runtime packages in `devDependencies`
+- duplicate dependency families
+- workspace dependency links
+
+Use `references/dependency-hygiene.md` before reporting a task. Deletion always needs a usage check; package-block moves need repo policy and build context.
+
+### `scan-performance-hygiene.sh`
+
+Finds performance hygiene leads:
+
+- client component boundaries
+- large TSX/JSX files
+- dynamic imports
+- raw image tags
+- unbounded list renders
+- heavy dependency imports
+
+Use `references/performance-hygiene.md` before reporting a task. Performance output is a lead until route behavior, bundle tooling, and data size are checked.
 
 ## Installer
 

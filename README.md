@@ -6,7 +6,7 @@ Read-only website cleanup audits for agents that need evidence before edits.
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Works with agents](https://img.shields.io/badge/agents-Codex%20%7C%20OpenCode%20%7C%20OpenClaw%20%7C%20Copilot%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Cline-lightgrey)
 
-**Website Shower** is a read-only website maintenance audit skill. It starts with repo shape, then checks tooling, framework habits, styling, API contracts, state/domain contracts, type and constant ownership, and unused-code leads.
+**Website Shower** is a read-only website maintenance audit skill. It starts with repo shape and package ownership, then checks tooling, framework habits, styling, components, API contracts, data fetching, state/domain contracts, naming drift, dependencies, performance, type and constant ownership, and unused-code leads.
 
 The type and constants module helps an agent answer one practical question:
 
@@ -22,13 +22,12 @@ Multi Audit -> TODO Report -> Human Permission -> Cleanup Work
 
 ## What It Catches
 
-- duplicated `Status`, `Role`, `Kind`, `Variant`, `Mode`, and event contracts
-- repeated literal unions that drift across hooks, stores, services, and UI
-- raw strings used even though an owning constant or union already exists
-- stale exports and misleading barrels
-- junk-drawer `types.ts` or `constants.ts` files
-- feature-owned values promoted too high
-- fake reuse where an inline literal is clearer
+- unclear app, package, feature, and generated-code boundaries
+- duplicated API, state, worker, and event contracts
+- repeated literal unions, route literals, cache policies, and query keys
+- component, Tailwind, CSS token, data-fetching, and performance cleanup leads
+- naming drift for one concept across `status`, `state`, `phase`, `mode`, `kind`, or `type`
+- dependency drift, stale exports, misleading barrels, and junk-drawer files
 
 ## What It Does Not Do
 
@@ -42,14 +41,14 @@ Multi Audit -> TODO Report -> Human Permission -> Cleanup Work
 Full example: [`examples/website-shower-report.md`](examples/website-shower-report.md)
 
 ```md
-- [ ] WS-001 Deduplicate `WorkItem`
-  Module: types-constants
-  Confidence: high
+- [ ] WS-001 Choose one feature folder convention
+  Module: file-tree-hygiene
+  Confidence: medium
   Files:
-  - `examples/fixture/src/state/contracts.ts:11`
-  - `examples/fixture/src/state/feature/workSlice.ts:3`
+  - `examples/fixture/src/feature/consumeEvent.ts:1`
+  - `examples/fixture/src/features/items/navigation.ts:1`
   Safe action:
-  Keep `WorkItem` in `src/state/contracts.ts`, import it in `workSlice.ts`, and remove the local interface.
+  Pick the repo convention before moving files. If `src/features` is the target, migrate one owned slice at a time.
   Permission: required
 ```
 
@@ -65,6 +64,12 @@ To inspect file-tree hygiene only:
 
 ```bash
 scripts/scan-file-tree-hygiene.sh /path/to/repo
+```
+
+To inspect monorepo ownership only:
+
+```bash
+scripts/scan-monorepo-ownership.sh /path/to/repo
 ```
 
 The unused-code module first looks for `fallow` in the audited repo's `node_modules/.bin`, then for a globally available `fallow`. If unavailable, it falls back to a simpler `rg` scan for exported symbols to usage-check. To allow `npx` resolution, run:
@@ -91,16 +96,46 @@ To inspect Tailwind cleanup leads only:
 scripts/scan-tailwind-cleanup.sh /path/to/repo
 ```
 
+To inspect component hygiene leads only:
+
+```bash
+scripts/scan-component-hygiene.sh /path/to/repo
+```
+
 To inspect API contract leads only:
 
 ```bash
 scripts/scan-api-contracts.sh /path/to/repo
 ```
 
+To inspect data-fetching hygiene leads only:
+
+```bash
+scripts/scan-data-fetching-hygiene.sh /path/to/repo
+```
+
 To inspect state and domain contract leads only:
 
 ```bash
 scripts/scan-state-domain-contracts.sh /path/to/repo
+```
+
+To inspect naming drift leads only:
+
+```bash
+scripts/scan-naming-drift.sh /path/to/repo
+```
+
+To inspect dependency hygiene leads only:
+
+```bash
+scripts/scan-dependency-hygiene.sh /path/to/repo
+```
+
+To inspect performance hygiene leads only:
+
+```bash
+scripts/scan-performance-hygiene.sh /path/to/repo
 ```
 
 For monorepos, scan the root only for orientation, then narrow the target:
@@ -169,7 +204,7 @@ This repo is instruction-first, so it also works in agents that can read Markdow
 - **Kiro**: use `.kiro/steering/types-constants-audit.md`.
 - **Agents that read `AGENTS.md`**: run from this repo root or copy `AGENTS.md` into the project that should load the audit behavior.
 - **Agents that read `.agents/rules/`**: use `.agents/rules/types-constants-audit.md`.
-- **Any shell-capable agent**: run `scripts/scan-types-constants.sh` and then inspect usage manually before reporting.
+- **Any shell-capable agent**: run `scripts/scan-website-shower.sh` and then inspect usage manually before reporting.
 
 See `docs/agent-portability.md` for the adapter map.
 
@@ -191,7 +226,13 @@ opencode.json                    # OpenCode project config
 references/audit-heuristics.md   # signal vs noise rules
 references/api-contracts.md      # API contract hygiene guidance
 references/audit-orchestrator.md # multi-module report coordination
+references/component-hygiene.md  # component hygiene guidance
+references/data-fetching-hygiene.md # data-fetching hygiene guidance
+references/dependency-hygiene.md # package dependency hygiene guidance
 references/file-tree-hygiene.md  # repo shape and ownership-boundary guidance
+references/monorepo-ownership.md # workspace and package ownership guidance
+references/naming-drift.md       # domain vocabulary drift guidance
+references/performance-hygiene.md # performance lead guidance
 references/placement-rules.md    # inline/local/global/shared decision rules
 references/report-format.md      # finding and checklist format guidance
 references/react-next-habits.md  # React and Next.js habit guidance
@@ -200,8 +241,14 @@ references/tailwind-cleanup.md   # Tailwind cleanup guidance
 references/typescript-hygiene.md # TypeScript migration and escape-hatch guidance
 references/unused-code.md        # fallow-backed unused-code audit guidance
 scripts/scan-file-tree-hygiene.sh # repo shape candidate scanner
+scripts/scan-monorepo-ownership.sh # monorepo ownership candidate scanner
+scripts/scan-naming-drift.sh     # naming drift candidate scanner
 scripts/scan-types-constants.sh  # type and constant candidate scanner
 scripts/scan-api-contracts.sh    # API contract candidate scanner
+scripts/scan-component-hygiene.sh # component candidate scanner
+scripts/scan-data-fetching-hygiene.sh # data-fetching candidate scanner
+scripts/scan-dependency-hygiene.sh # dependency candidate scanner
+scripts/scan-performance-hygiene.sh # performance candidate scanner
 scripts/scan-react-next-habits.sh # React and Next.js candidate scanner
 scripts/scan-state-domain-contracts.sh # state and domain candidate scanner
 scripts/scan-tailwind-cleanup.sh # Tailwind cleanup candidate scanner

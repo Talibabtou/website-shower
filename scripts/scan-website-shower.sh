@@ -21,6 +21,9 @@ printf 'Mode: read-only candidate gathering\n'
 section "File Tree Hygiene"
 "$ROOT/scripts/scan-file-tree-hygiene.sh" "$TARGET"
 
+section "Monorepo Ownership"
+"$ROOT/scripts/scan-monorepo-ownership.sh" "$TARGET"
+
 section "TypeScript Hygiene"
 "$ROOT/scripts/scan-typescript-hygiene.sh" "$TARGET"
 
@@ -30,11 +33,26 @@ section "React And Next.js Habits"
 section "Tailwind Cleanup"
 "$ROOT/scripts/scan-tailwind-cleanup.sh" "$TARGET"
 
+section "Component Hygiene"
+"$ROOT/scripts/scan-component-hygiene.sh" "$TARGET"
+
 section "API Contracts"
 "$ROOT/scripts/scan-api-contracts.sh" "$TARGET"
 
+section "Data Fetching Hygiene"
+"$ROOT/scripts/scan-data-fetching-hygiene.sh" "$TARGET"
+
 section "State And Domain Contracts"
 "$ROOT/scripts/scan-state-domain-contracts.sh" "$TARGET"
+
+section "Naming Drift"
+"$ROOT/scripts/scan-naming-drift.sh" "$TARGET"
+
+section "Dependency Hygiene"
+"$ROOT/scripts/scan-dependency-hygiene.sh" "$TARGET"
+
+section "Performance Hygiene"
+"$ROOT/scripts/scan-performance-hygiene.sh" "$TARGET"
 
 section "Types And Constants"
 "$ROOT/scripts/scan-types-constants.sh" "$TARGET"

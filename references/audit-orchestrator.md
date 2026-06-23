@@ -19,37 +19,67 @@ multi-audit -> TODO report -> human permission -> cleanup work
    - Reference: `references/file-tree-hygiene.md`
    - Purpose: find repo shape, app/package boundaries, feature folders, generated folders, junk drawers, route layout, and naming consistency leads.
 
-3. TypeScript hygiene
+3. Monorepo ownership hygiene
+   - Script: `scripts/scan-monorepo-ownership.sh`
+   - Reference: `references/monorepo-ownership.md`
+   - Purpose: find feature-private imports, premature shared packages, app-global junk drawers, and cross-package contract drift.
+
+4. TypeScript hygiene
    - Script: `scripts/scan-typescript-hygiene.sh`
    - Reference: `references/typescript-hygiene.md`
    - Purpose: find typed-code escape hatches, migration leftovers, and duplicated API-style contracts.
 
-4. React and Next.js habits
+5. React and Next.js habits
    - Script: `scripts/scan-react-next-habits.sh`
    - Reference: `references/react-next-habits.md`
    - Purpose: find server/client boundary drift, route config drift, fetch policy repetition, route literal repetition, and prop type placement leads.
 
-5. Tailwind cleanup
+6. Tailwind cleanup
    - Script: `scripts/scan-tailwind-cleanup.sh`
    - Reference: `references/tailwind-cleanup.md`
    - Purpose: find Tailwind source/config drift, dynamic class construction, repeated arbitrary values, long class lists, duplicate utilities, and token leads.
 
-6. API contract hygiene
+7. Component hygiene
+   - Script: `scripts/scan-component-hygiene.sh`
+   - Reference: `references/component-hygiene.md`
+   - Purpose: find oversized components, variant prop drift, repeated loading/error/empty states, repeated UI patterns, and client components doing server-like work.
+
+8. API contract hygiene
    - Script: `scripts/scan-api-contracts.sh`
    - Reference: `references/api-contracts.md`
    - Purpose: find duplicated request/response contracts between routes, clients, schemas, mocks, tests, and generated boundaries.
 
-7. State and domain contract hygiene
+9. Data-fetching hygiene
+   - Script: `scripts/scan-data-fetching-hygiene.sh`
+   - Reference: `references/data-fetching-hygiene.md`
+   - Purpose: find query key drift, cache policy repetition, duplicated fetch wrappers, client/server fetching mix, and missing validation around fetched data.
+
+10. State and domain contract hygiene
    - Script: `scripts/scan-state-domain-contracts.sh`
    - Reference: `references/state-domain-contracts.md`
    - Purpose: find duplicated store state, event payloads, selector return types, status machines, action names, and cross-boundary domain contracts.
 
-8. Types and constants ownership
+11. Naming drift hygiene
+   - Script: `scripts/scan-naming-drift.sh`
+   - Reference: `references/naming-drift.md`
+   - Purpose: find one domain concept named with different words, such as `status`, `state`, `phase`, `mode`, `kind`, or `type`.
+
+12. Dependency hygiene
+   - Script: `scripts/scan-dependency-hygiene.sh`
+   - Reference: `references/dependency-hygiene.md`
+   - Purpose: find mixed package managers, dependency block mistakes, duplicate dependency families, workspace dependency leads, and unused-dependency candidates.
+
+13. Performance hygiene
+   - Script: `scripts/scan-performance-hygiene.sh`
+   - Reference: `references/performance-hygiene.md`
+   - Purpose: find client-boundary leads, large TSX files, dynamic imports, raw images, unbounded list renders, and heavy dependency imports.
+
+14. Types and constants ownership
    - Script: `scripts/scan-types-constants.sh`
    - Reference: `references/placement-rules.md`, `references/audit-heuristics.md`
    - Purpose: find repeated contracts, literal unions, enum-like values, magic values, barrels, and placement drift after repo owners are clearer.
 
-9. Unused code and stale exports
+15. Unused code and stale exports
    - Script: `scripts/scan-unused-code.sh`
    - Reference: `references/unused-code.md`
    - Tool: repo-local/global `fallow` when available, optional `npx`, basic `rg` fallback otherwise
@@ -60,9 +90,10 @@ multi-audit -> TODO report -> human permission -> cleanup work
 Read scanner output in the same order. Use early sections to reduce false positives later:
 
 - File-tree shape tells you which folders are app roots, packages, generated output, framework routes, feature owners, or junk drawers.
+- Monorepo ownership tells you which package boundaries are public, private, premature, or drifting.
 - TypeScript and checker setup tells you whether strictness, `any`, JS migration leftovers, and formatter policy explain later drift.
 - React and Next.js shape tells you which files are framework entrypoints, server components, client components, routes, or metadata owners.
-- Tailwind, API, and state/domain sections identify styling, request/response, and store/event owners before type placement work.
+- Tailwind, component, API, data, state/domain, naming, dependency, and performance sections identify styling, UI, request/response, data-flow, store/event, vocabulary, package, and runtime owners before type placement work.
 - Types/constants and unused-code sections turn that context into concrete cleanup tasks.
 
 ## Report Contract
