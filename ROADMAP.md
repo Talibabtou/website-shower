@@ -89,7 +89,7 @@ Working name: **Website Shower**. This should be an all-in-one read-only website
 - [x] Convert multi-module scanner output into a first `examples/website-shower-report.md` checklist.
 - [x] Add TypeScript migration hygiene module: `any`, unsafe casts, duplicate hand-written API types, weak `unknown` bridges, old JS migration leftovers.
 - [x] Extract real-repo feedback checklist into `docs/real-repo-validation-checklist.md`.
-- [ ] React and Next.js habit audit: server/client boundary drift, route constants, metadata duplication, cache/fetch option drift, prop type placement.
+- [x] Add React and Next.js habit audit: server/client boundary drift, route constants, metadata duplication, cache/fetch option drift, prop type placement.
 - [ ] Tailwind cleanup audit: config drift, repeated arbitrary values, unused theme tokens, one-off utility patterns that should become design tokens, and class soup in shared components.
 - [ ] API contract hygiene: duplicated request/response shapes between routes, clients, hooks, schemas, and mocks.
 - [ ] State and domain contract hygiene: duplicated store state, event payloads, selector return types, status machines, and action names.

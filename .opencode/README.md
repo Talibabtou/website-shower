@@ -1,10 +1,10 @@
 # OpenCode Adapter
 
-OpenCode reads `opencode.json` from the project root. That file points to `.opencode/instructions/types-constants-audit.md`, which is the OpenCode-specific adapter for the canonical skill.
+OpenCode reads `opencode.json` from the project root. That file points to `.opencode/instructions/types-constants-audit.md`, which is the current compatibility path for the Website Shower adapter.
 
-Commands are intentionally not shipped yet. v0.1 has one primary workflow, so a command folder would add ceremony without improving use.
+Commands are intentionally not shipped yet. Website Shower still has one primary workflow: run the multi-module audit, turn candidates into a checklist, then wait for permission before edits.
 
-When phase two adds separate audit modes, add commands under:
+When separate audit modes need direct entry points, add commands under:
 
 ```text
 .opencode/command/
@@ -13,6 +13,6 @@ When phase two adds separate audit modes, add commands under:
 Likely future commands:
 
 - `audit-types.md`
+- `audit-next-habits.md`
 - `audit-tailwind.md`
 - `audit-unused.md`
-- `audit-next-habits.md`

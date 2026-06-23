@@ -10,6 +10,9 @@ usage() {
   cat <<'USAGE'
 usage: scripts/install-agent.sh <agent> [target-project]
 
+Install Website Shower adapters. Some paths still use the old types-constants-audit
+compatibility name until the package rename is finished.
+
 Agents:
   codex       Link this repo into ~/.codex/skills/types-constants-audit
   opencode    Copy opencode.json and .opencode/ into the target project

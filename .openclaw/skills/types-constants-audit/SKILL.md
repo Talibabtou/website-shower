@@ -1,25 +1,29 @@
 ---
 name: types-constants-audit
-description: Read-only audit for TypeScript type files, constant files, literal unions, enum-like values, stale exports, and shared vs feature-local placement in web repositories.
+description: Read-only Website Shower audit for website repo hygiene, including type and constant drift, unused-code leads, TypeScript hygiene, React/Next.js habits, stale exports, and cleanup checklist tasks.
 ---
 
-# Types Constants Audit
+# Website Shower
 
-Use this skill to audit TypeScript type and constant organization without modifying the target repository.
+Use this skill to audit website maintenance issues without modifying the target repository.
 
 If the repository checkout includes the root skill files, read:
 
 - `SKILL.md`
+- `references/audit-orchestrator.md`
 - `references/audit-heuristics.md`
 - `references/placement-rules.md`
 - `references/report-format.md`
+- `references/unused-code.md`
+- `references/typescript-hygiene.md`
+- `references/react-next-habits.md`
 
 When shell access is available, run:
 
 ```bash
-scripts/scan-types-constants.sh <target>
+scripts/scan-website-shower.sh <target>
 ```
 
 For monorepos, scan the root only for orientation, then scan one app/package/domain.
 
-Report findings only after confirming shape, ownership, and usage. Do not edit audited files unless the user explicitly asks for fixes.
+Report checklist tasks only after confirming shape, ownership, usage, framework rules, and validation. Do not edit audited files unless the user explicitly asks for fixes.

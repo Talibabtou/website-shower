@@ -3,7 +3,7 @@
 set -uo pipefail
 
 TARGET="${1:-.}"
-MAX_SECTION_LINES="${MAX_SECTION_LINES:-200}"
+MAX_SECTION_LINES="${MAX_SECTION_LINES:-300}"
 
 if ! command -v rg >/dev/null 2>&1; then
   echo "error: ripgrep (rg) is required" >&2

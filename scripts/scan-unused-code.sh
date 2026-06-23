@@ -4,7 +4,7 @@ set -uo pipefail
 
 TARGET="${1:-.}"
 shift || true
-MAX_SECTION_LINES="${MAX_SECTION_LINES:-200}"
+MAX_SECTION_LINES="${MAX_SECTION_LINES:-300}"
 
 if [ ! -d "$TARGET" ]; then
   echo "error: target is not a directory: $TARGET" >&2

@@ -27,6 +27,9 @@ section "Unused Code"
 section "TypeScript Hygiene"
 "$ROOT/scripts/scan-typescript-hygiene.sh" "$TARGET"
 
+section "React And Next.js Habits"
+"$ROOT/scripts/scan-react-next-habits.sh" "$TARGET"
+
 cat <<'NOTE'
 
 # Notes

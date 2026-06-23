@@ -1,4 +1,4 @@
 interface:
-  display_name: "Types & Constants Audit"
-  short_description: "Audit TypeScript type and constant organization."
-  default_prompt: "Audit this repo for duplicated types, scattered constants, magic literals, stale exports, and bad global/local placement."
+  display_name: "Website Shower"
+  short_description: "Read-only website cleanup audit that turns repo signals into a checklist."
+  default_prompt: "Audit this website repo with Website Shower. Produce a read-only cleanup checklist with concrete file evidence, confidence, validation steps, and permission status. Do not edit files."

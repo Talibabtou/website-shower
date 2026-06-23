@@ -4,13 +4,13 @@ Fixture report generated from read-only scanner output. No audited files were ch
 
 ## Summary
 
-- Total tasks: 8
+- Total tasks: 10
 - Safe first cleanup: `WS-004`
 - Needs human decision: `WS-003`, `WS-006`
 - Commands used:
 
 ```bash
-MAX_SECTION_LINES=80 scripts/scan-website-shower.sh examples/fixture
+MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 ```
 
 ## Cleanup Checklist
@@ -129,6 +129,36 @@ MAX_SECTION_LINES=80 scripts/scan-website-shower.sh examples/fixture
   Run the new scripts once and record any rule that must stay disabled during migration.
   Permission: required
 
+- [ ] WS-009 Split client behavior out of the route page
+  Module: react-next-habits
+  Confidence: high
+  Files:
+  - `examples/fixture/src/app/items/page.tsx:1`
+  - `examples/fixture/src/app/items/page.tsx:3`
+  - `examples/fixture/src/app/items/page.tsx:14`
+  Why:
+  The route page exports metadata but also imports client hooks. In App Router, this mixes server-owned route metadata with client-only behavior.
+  Safe action:
+  Keep metadata in the page, move the interactive state/effect code into a small child client component, and pass only serializable props.
+  Validation:
+  Run typecheck and the smallest Next build or route smoke check.
+  Permission: required
+
+- [ ] WS-010 Name repeated item route literals
+  Module: react-next-habits
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/app/items/page.tsx:20`
+  - `examples/fixture/src/features/items/navigation.ts:2`
+  - `examples/fixture/src/features/items/navigation.ts:3`
+  Why:
+  Item route strings appear in both route UI and navigation data. This is a lead for drift once links, redirects, and fetch calls grow.
+  Safe action:
+  If these routes are shared outside their folder owner, add a small route helper near the items feature and import it from consumers.
+  Validation:
+  Check generated links and route tests, if the repo has them.
+  Permission: required
+
 ## Leads Ignored
 
 - `default` in `src/ui/control.ts` is a local UI variant, not a domain constant.
@@ -136,3 +166,4 @@ MAX_SECTION_LINES=80 scripts/scan-website-shower.sh examples/fixture
 - Basic unused-code fallback output is weaker than `fallow`; every unused-code item needs a follow-up search before deletion.
 - `readOptionalAmount` uses `unknown` safely because it narrows before returning a value.
 - Missing Biome, Prettier, and ESLint are one setup lead, not separate tasks. A repo should pick one formatter path and one lint path unless it has a reason to run more.
+- `metadata` in a single route file is normal. It becomes a task only when it is mixed with client behavior or repeated across routes without ownership.

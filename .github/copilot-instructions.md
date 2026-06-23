@@ -1,16 +1,15 @@
-# Types Constants Audit
+# Website Shower
 
-This repository defines an audit skill for TypeScript type and constant organization.
+This repository defines a read-only website maintenance audit skill.
 
-Default behavior is read-only. Produce findings and recommendations; do not edit audited repos unless explicitly asked.
+Default behavior is read-only. Produce a checklist report; do not edit audited repos unless explicitly asked.
 
 Use this order:
 
 1. Read `SKILL.md`.
-2. Run `scripts/scan-types-constants.sh <target>` if shell access is available.
+2. Run `scripts/scan-website-shower.sh <target>` if shell access is available.
 3. Narrow monorepo audits to one app/package/domain after the root orientation scan.
-4. Apply `references/placement-rules.md` for placement decisions.
-5. Apply `references/audit-heuristics.md` to separate signal from noise.
-6. Format findings using `references/report-format.md`.
+4. Load only the needed module references.
+5. Format cleanup tasks using `references/report-format.md`.
 
-Treat repeated names, literals, and primitive values as leads, not findings. Confirm shape, ownership, and usage before recommending movement.
+Scanner output is candidate evidence only. Confirm ownership, usage, framework rules, and validation before reporting a task.

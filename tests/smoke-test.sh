@@ -6,13 +6,15 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT="$(mktemp "${TMPDIR:-/tmp}/types-constants-smoke.XXXXXX")"
 UNUSED_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-unused-smoke.XXXXXX")"
 TS_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-ts-smoke.XXXXXX")"
+REACT_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-react-smoke.XXXXXX")"
 SHOWER_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-smoke.XXXXXX")"
 REPORT="$ROOT/examples/website-shower-report.md"
-trap 'rm -f "$OUTPUT" "$UNUSED_OUTPUT" "$TS_OUTPUT" "$SHOWER_OUTPUT"' EXIT
+trap 'rm -f "$OUTPUT" "$UNUSED_OUTPUT" "$TS_OUTPUT" "$REACT_OUTPUT" "$SHOWER_OUTPUT"' EXIT
 
 "$ROOT/scripts/scan-types-constants.sh" "$ROOT/examples/fixture" > "$OUTPUT"
 "$ROOT/scripts/scan-unused-code.sh" "$ROOT/examples/fixture" > "$UNUSED_OUTPUT"
 "$ROOT/scripts/scan-typescript-hygiene.sh" "$ROOT/examples/fixture" > "$TS_OUTPUT"
+"$ROOT/scripts/scan-react-next-habits.sh" "$ROOT/examples/fixture" > "$REACT_OUTPUT"
 MAX_SECTION_LINES=10 "$ROOT/scripts/scan-website-shower.sh" "$ROOT/examples/fixture" > "$SHOWER_OUTPUT"
 
 assert_contains() {
@@ -83,10 +85,20 @@ assert_contains "as unknown as" "$TS_OUTPUT"
 assert_contains "== JavaScript files in typed source ==" "$TS_OUTPUT"
 assert_contains "legacyWidget.js" "$TS_OUTPUT"
 
+assert_contains "== Framework signals ==" "$REACT_OUTPUT"
+assert_contains "src/app" "$REACT_OUTPUT"
+assert_contains "== App Router files with client hooks but no directive ==" "$REACT_OUTPUT"
+assert_contains "items/page.tsx" "$REACT_OUTPUT"
+assert_contains "== Metadata and route config exports ==" "$REACT_OUTPUT"
+assert_contains "export const metadata" "$REACT_OUTPUT"
+assert_contains "== Route-like string leads ==" "$REACT_OUTPUT"
+assert_contains "\"/items/new\"" "$REACT_OUTPUT"
+
 assert_contains "# Website Shower Candidate Scan" "$SHOWER_OUTPUT"
 assert_contains "# Types And Constants" "$SHOWER_OUTPUT"
 assert_contains "# Unused Code" "$SHOWER_OUTPUT"
 assert_contains "# TypeScript Hygiene" "$SHOWER_OUTPUT"
+assert_contains "# React And Next.js Habits" "$SHOWER_OUTPUT"
 assert_contains "This orchestrator gathers module outputs only." "$SHOWER_OUTPUT"
 
 assert_contains "# Website Shower Report" "$REPORT"
@@ -95,6 +107,8 @@ assert_contains "WS-003 Consolidate preview worker messages" "$REPORT"
 assert_contains "WS-004 Remove stale env helpers" "$REPORT"
 assert_contains "WS-007 Replace unsafe input escape hatch" "$REPORT"
 assert_contains "WS-008 Add repeatable checker guardrails" "$REPORT"
+assert_contains "WS-009 Split client behavior out of the route page" "$REPORT"
+assert_contains "WS-010 Name repeated item route literals" "$REPORT"
 assert_contains "No audited files were changed." "$REPORT"
 
 echo "smoke test ok"

@@ -79,6 +79,12 @@ To inspect TypeScript migration and escape-hatch leads only:
 scripts/scan-typescript-hygiene.sh /path/to/repo
 ```
 
+To inspect React and Next.js habit leads only:
+
+```bash
+scripts/scan-react-next-habits.sh /path/to/repo
+```
+
 For monorepos, scan the root only for orientation, then narrow the target:
 
 ```bash
@@ -168,9 +174,11 @@ references/audit-heuristics.md   # signal vs noise rules
 references/audit-orchestrator.md # multi-module report coordination
 references/placement-rules.md    # inline/local/global/shared decision rules
 references/report-format.md      # finding and checklist format guidance
+references/react-next-habits.md  # React and Next.js habit guidance
 references/typescript-hygiene.md # TypeScript migration and escape-hatch guidance
 references/unused-code.md        # fallow-backed unused-code audit guidance
 scripts/scan-types-constants.sh  # read-only scanner
+scripts/scan-react-next-habits.sh # React and Next.js candidate scanner
 scripts/scan-unused-code.sh      # fallow-backed unused-code candidate scanner
 scripts/scan-typescript-hygiene.sh # TypeScript hygiene candidate scanner
 scripts/scan-website-shower.sh   # read-only multi-module scanner

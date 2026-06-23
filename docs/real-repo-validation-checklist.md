@@ -24,7 +24,7 @@ Use this file while testing Website Shower before a release. The goal is feedbac
 - [ ] Run the full candidate scan:
 
 ```bash
-MAX_SECTION_LINES=120 scripts/scan-website-shower.sh /path/to/repo
+MAX_SECTION_LINES=300 scripts/scan-website-shower.sh /path/to/repo
 ```
 
 - [ ] If `fallow` is installed in the repo or globally, run:
@@ -72,9 +72,16 @@ scripts/scan-typescript-hygiene.sh /path/to/repo
 - [ ] If ESLint exists, does it spot missing `no-console`, `no-debugger`, `prefer-const`, `eqeqeq`, `@typescript-eslint/no-explicit-any`, TypeScript unused-vars, and React hooks rules?
 - [ ] Does it flag `any`, double casts, suppressions, and old JS files without turning safe `unknown` narrowing into a finding?
 
+### React And Next.js Habits
+
+- [ ] Does it detect App Router, Pages Router, or non-Next React shape correctly?
+- [ ] Does it flag client hooks in App Router files without treating valid client components as findings?
+- [ ] Does it separate metadata and route config repetition from local route-owned values?
+- [ ] Does it find repeated fetch cache policies that should become a named convention?
+- [ ] Does it find route literals that cross navigation, redirects, fetch calls, and tests?
+
 ### Future Modules
 
-- [ ] React and Next.js habits: server/client boundary drift, route constants, metadata duplication, cache/fetch option drift, prop type placement.
 - [ ] Tailwind cleanup: config drift, repeated arbitrary values, unused tokens, class duplication, shared component class soup.
 - [ ] API contracts: duplicated request/response shapes between routes, clients, hooks, schemas, and mocks.
 - [ ] State and domain contracts: duplicated store state, event payloads, selector return types, status machines, and action names.

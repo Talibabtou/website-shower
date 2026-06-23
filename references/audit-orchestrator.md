@@ -28,6 +28,11 @@ multi-audit -> TODO report -> human permission -> cleanup work
    - Reference: `references/typescript-hygiene.md`
    - Purpose: find typed-code escape hatches, migration leftovers, and duplicated API-style contracts.
 
+5. React and Next.js habits
+   - Script: `scripts/scan-react-next-habits.sh`
+   - Reference: `references/react-next-habits.md`
+   - Purpose: find server/client boundary drift, route config drift, fetch policy repetition, route literal repetition, and prop type placement leads.
+
 ## Report Contract
 
 The final report must be a Markdown checklist that can be read by a human or another agent.
