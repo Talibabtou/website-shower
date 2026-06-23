@@ -1,18 +1,20 @@
-# Types Constants Audit
+# Website Shower
 
-Find TypeScript type and constant drift before it turns into a habit.
+Read-only website cleanup audits for agents that need evidence before edits.
 
 ![Version](https://img.shields.io/badge/version-0.1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Works with agents](https://img.shields.io/badge/agents-Codex%20%7C%20OpenCode%20%7C%20OpenClaw%20%7C%20Copilot%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Cline-lightgrey)
 
-`types-constants-audit` is evolving into **Website Shower**, a read-only website maintenance audit skill. The first stable module audits where types, literal unions, enum-like values, constants, and magic values live in a web repo. It helps an agent answer one practical question:
+**Website Shower** is a read-only website maintenance audit skill. The first stable module audits where types, literal unions, enum-like values, constants, and magic values live in a web repo. The second module adds unused-code leads through `fallow` when available, with a basic shell fallback.
+
+The type and constants module helps an agent answer one practical question:
 
 > Should this contract be inline, feature-local, app-global, shared, or deleted?
 
 The skill ships with a small Bash scanner so agents can quickly map candidate files and repeated patterns, then use the references to decide what is actually worth reporting.
 
-Website Shower's long-term workflow is:
+The workflow is:
 
 ```text
 Multi Audit -> TODO Report -> Human Permission -> Cleanup Work
@@ -35,21 +37,20 @@ Multi Audit -> TODO Report -> Human Permission -> Cleanup Work
 - It does not treat scanner output as findings.
 - It does not modify example repos during validation.
 
-## Example Output
+## Example Report
 
-Full example: [`examples/audit-report.md`](examples/audit-report.md)
+Full example: [`examples/website-shower-report.md`](examples/website-shower-report.md)
 
 ```md
-1. Duplicated type: `WorkItem`
-   Severity: medium
-   Confidence: high
-
-   Current:
-   - `examples/fixture/src/state/contracts.ts:11`
-   - `examples/fixture/src/state/feature/workSlice.ts:3`
-
-   Recommendation:
-   Keep `WorkItem` in `src/state/contracts.ts` and import it from the feature slice.
+- [ ] WS-001 Deduplicate `WorkItem`
+  Module: types-constants
+  Confidence: high
+  Files:
+  - `examples/fixture/src/state/contracts.ts:11`
+  - `examples/fixture/src/state/feature/workSlice.ts:3`
+  Safe action:
+  Keep `WorkItem` in `src/state/contracts.ts`, import it in `workSlice.ts`, and remove the local interface.
+  Permission: required
 ```
 
 ## Quick Start
@@ -160,7 +161,7 @@ opencode.json                    # OpenCode project config
 references/audit-heuristics.md   # signal vs noise rules
 references/audit-orchestrator.md # multi-module report coordination
 references/placement-rules.md    # inline/local/global/shared decision rules
-references/report-format.md      # finding format and severity guidance
+references/report-format.md      # finding and checklist format guidance
 references/unused-code.md        # fallow-backed unused-code audit guidance
 scripts/scan-types-constants.sh  # read-only scanner
 scripts/scan-unused-code.sh      # fallow-backed unused-code candidate scanner
@@ -168,8 +169,7 @@ scripts/scan-website-shower.sh   # read-only multi-module scanner
 scripts/install-agent.sh         # copies/links agent adapters
 tests/smoke-test.sh              # fixture regression check
 examples/fixture/                # anonymous scanner fixture
-examples/audit-report.md         # example read-only report
-examples/report-template.md      # reusable report skeleton
+examples/website-shower-report.md # example checklist report
 docs/agent-portability.md        # compatibility notes
 ```
 
@@ -181,7 +181,7 @@ Run the smoke test after changing the scanner or fixture:
 npm test
 ```
 
-The next quality bar is one anonymized before/after audit report showing how scanner output becomes actual findings.
+The next quality bar is validating the multi-module checklist report on real repos without changing audited files.
 
 Custom command folders are intentionally not shipped yet. The current skill has one primary action, so `SKILL.md` plus the scanner is clearer. Commands become useful in phase two when there are distinct workflows like `/audit-types`, `/audit-tailwind`, `/audit-unused`, or `/audit-next-habits`.
 

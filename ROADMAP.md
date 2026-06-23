@@ -1,8 +1,10 @@
-# Types Constants Audit Roadmap
+# Website Shower Roadmap
 
-Goal: help an agent find TypeScript type and constant organization issues, then decide where each symbol should live using repo-grounded evidence.
+Goal: help an agent audit a website repo without editing it, turn scanner output into a clear cleanup checklist, then wait for human permission before any code changes.
 
 ## Done
+
+### Types And Constants Module
 
 - [x] Create `SKILL.md` with trigger wording, manual workflow, read-only posture, and reporting rules.
 - [x] Add placement guidance in `references/placement-rules.md`.
@@ -33,15 +35,14 @@ Goal: help an agent find TypeScript type and constant organization issues, then 
 - [x] Add `scripts/install-agent.sh` for local agent adapter installation.
 - [x] Move smoke testing into `tests/`.
 - [x] Add example markdown under `examples/`.
-- [x] Add a reusable report template in `examples/report-template.md`.
-- [x] Add a first anonymized example report in `examples/audit-report.md`.
+- [x] Add one anonymized checklist report in `examples/website-shower-report.md`.
 - [x] Require concrete file-path evidence for release-quality findings.
 
 ## Release Gate: v0.1.0
 
 These tasks decide whether the current skill is genuinely releasable. Do them before adding any phase-two capability.
 
-- [x] Upgrade `examples/audit-report.md` into a richer before/after-style report:
+- [x] Upgrade the example report into a richer before/after-style report:
   - show scanner signals before judgment
   - show final findings after judgment
   - include ignored leads and why they were ignored
@@ -49,7 +50,7 @@ These tasks decide whether the current skill is genuinely releasable. Do them be
   - keep the report read-only; no audited files are modified
 - [x] Run one full manual validation audit from scanner output.
 - [x] Confirm the skill can produce 5-15 useful findings or leads without editing files.
-- [x] Record validation outcome in `examples/validation-notes.md`:
+- [x] Record validation outcome in the example report:
   - target shape
   - command used
   - number of findings
@@ -79,14 +80,14 @@ These tasks decide whether the current skill is genuinely releasable. Do them be
 
 ## Scope Guardrails
 
-- [ ] Do not add commands until there are at least two real workflows.
+- [ ] Do not add commands until separate workflows need separate entry points.
 - [ ] Do not add AST tooling until `rg` fails on a real validation task.
-- [ ] Do not add Tailwind, React/Next, unused-code, or TypeScript-migration audits before `v0.1.0`.
-- [ ] Do not turn the current skill into a generic cleanup skill until the type/constant audit is release-quality.
+- [ ] Keep every module read-only by default; scanner output is evidence, not an edit plan.
+- [ ] Add new audit areas one module at a time, with a scanner or manual workflow, fixture signal, report task, and real-repo validation.
 
 ## Phase Two: Website Maintenance And Code Hygiene
 
-Keep v0.1 focused on type and constant drift. After v0.1 is released, expand into a broader website maintenance skill in separate, testable modules. Each module should ship with its own scanner or workflow, example report, validation notes, and optional command.
+Expand into a broader website maintenance skill in separate, testable modules. Each module should ship with its own scanner or manual workflow, fixture signal, report task, validation note, and optional command.
 
 Working name: **Website Shower**. This should be an all-in-one read-only website maintenance audit that produces a Markdown checklist report for humans and agents. The workflow should be: multi-audit -> TODO report -> ask human permission -> clean without changing functionality.
 
@@ -95,7 +96,8 @@ Working name: **Website Shower**. This should be an all-in-one read-only website
 - [x] Add separate unused-code scanner: `scripts/scan-unused-code.sh`.
 - [x] Add unused-code guidance using `fallow`: `references/unused-code.md`.
 - [ ] Validate the `fallow` unused-code module on a real repo and record false positives.
-- [ ] Convert multi-module scanner output into a first `examples/website-shower-report.md` checklist.
+- [x] Convert multi-module scanner output into a first `examples/website-shower-report.md` checklist.
+- [ ] Validate the multi-module Website Shower report on a real repo and record misses or false positives.
 - [ ] TypeScript migration hygiene: `any`, unsafe casts, duplicate hand-written API types, weak `unknown` bridges, old JS migration leftovers.
 - [ ] React and Next.js habit audit: server/client boundary drift, route constants, metadata duplication, cache/fetch option drift, prop type placement.
 - [ ] Tailwind cleanup audit: config drift, repeated arbitrary values, unused theme tokens, one-off utility patterns that should become design tokens, and class soup in shared components.

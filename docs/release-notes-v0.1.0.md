@@ -10,7 +10,7 @@ Initial release of `types-constants-audit`.
 - Signal/noise heuristics for monorepos, generated files, repeated primitives, and local prop/state names.
 - Report format guidance.
 - Anonymous fixture and smoke test.
-- Example before/after audit report and reusable report template.
+- Example before/after audit report.
 - Agent compatibility files for Codex, OpenCode, OpenClaw, Copilot, Cursor, Windsurf, Cline, Kiro, `.agents`, and `AGENTS.md` consumers.
 
 ## Validation

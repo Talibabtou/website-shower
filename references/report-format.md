@@ -2,6 +2,8 @@
 
 Lead with findings. Omit empty sections.
 
+Website Shower reports should end as a Markdown checklist. Classic numbered findings are still useful for type-only audits, but the multi-module report should produce tasks a human or agent can approve one by one.
+
 ## Structure
 
 ```md
@@ -115,3 +117,22 @@ After findings, add at most:
 - checks to run
 
 If there are no findings, say no material issues found and mention search limits.
+
+## Checklist Report
+
+Use this shape for Website Shower reports:
+
+```md
+- [ ] WS-001 Short action title
+  Module: types-constants
+  Confidence: high
+  Files:
+  - `src/example.ts:12`
+  Why:
+  Explain the drift or deletion risk.
+  Safe action:
+  Name the smallest edit that would fix it.
+  Validation:
+  Name the smallest check to run after edits.
+  Permission: required
+```
