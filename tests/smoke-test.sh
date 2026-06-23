@@ -4,16 +4,21 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT="$(mktemp "${TMPDIR:-/tmp}/types-constants-smoke.XXXXXX")"
-trap 'rm -f "$OUTPUT"' EXIT
+UNUSED_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-unused-smoke.XXXXXX")"
+SHOWER_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-smoke.XXXXXX")"
+trap 'rm -f "$OUTPUT" "$UNUSED_OUTPUT" "$SHOWER_OUTPUT"' EXIT
 
 "$ROOT/scripts/scan-types-constants.sh" "$ROOT/examples/fixture" > "$OUTPUT"
+"$ROOT/scripts/scan-unused-code.sh" "$ROOT/examples/fixture" > "$UNUSED_OUTPUT"
+MAX_SECTION_LINES=10 "$ROOT/scripts/scan-website-shower.sh" "$ROOT/examples/fixture" > "$SHOWER_OUTPUT"
 
 assert_contains() {
   local pattern="$1"
-  if ! rg --fixed-strings "$pattern" "$OUTPUT" >/dev/null; then
+  local file="${2:-$OUTPUT}"
+  if ! rg --fixed-strings "$pattern" "$file" >/dev/null; then
     echo "missing expected scanner output: $pattern" >&2
     echo "--- scanner output ---" >&2
-    cat "$OUTPUT" >&2
+    cat "$file" >&2
     exit 1
   fi
 }
@@ -44,5 +49,22 @@ assert_contains "AppState appears"
 assert_contains "WorkItem appears"
 assert_contains "DomainEvent appears"
 assert_contains "ResourceMap appears"
+
+assert_contains "== Target ==" "$UNUSED_OUTPUT"
+assert_contains "examples/fixture" "$UNUSED_OUTPUT"
+assert_contains "== Tool ==" "$UNUSED_OUTPUT"
+
+if rg --fixed-strings "fallow unavailable" "$UNUSED_OUTPUT" >/dev/null; then
+  assert_contains "== Basic exported symbols to usage-check ==" "$UNUSED_OUTPUT"
+  assert_contains "Treat every line as a lead, not a finding." "$UNUSED_OUTPUT"
+else
+  assert_contains "fallow:" "$UNUSED_OUTPUT"
+  assert_contains "== Fallow dead-code ==" "$UNUSED_OUTPUT"
+fi
+
+assert_contains "# Website Shower Candidate Scan" "$SHOWER_OUTPUT"
+assert_contains "# Types And Constants" "$SHOWER_OUTPUT"
+assert_contains "# Unused Code" "$SHOWER_OUTPUT"
+assert_contains "This orchestrator gathers module outputs only." "$SHOWER_OUTPUT"
 
 echo "smoke test ok"

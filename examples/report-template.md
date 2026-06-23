@@ -31,6 +31,9 @@ scripts/scan-types-constants.sh <target>
    - `path/file.ts:line`
    - `path/other.ts:line`
 
+   Evidence missing:
+   Only include this field if exact paths or usage proof are missing. If this field is needed, downgrade the item to a lead.
+
    Recommendation:
    Name the exact move, deletion, import change, or non-move.
 

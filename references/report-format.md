@@ -54,6 +54,25 @@ Use one of these labels in the finding title:
 - bad local placement
 - inline candidate
 
+## Evidence Standard
+
+Every finding must cite at least one exact file path. Prefer line numbers. A finding without concrete paths is not release-quality; either add the missing evidence or downgrade it to a lead with an `Evidence missing:` note.
+
+Good:
+
+```md
+Current:
+- `src/workers/floor-preview.worker.ts:12`
+- `src/features/floor/hooks/useFloorPreview.ts:8`
+```
+
+Acceptable lead:
+
+```md
+Evidence missing:
+- Need exact worker and hook file paths before this can be high confidence.
+```
+
 ## Good Recommendation
 
 Name exact move:

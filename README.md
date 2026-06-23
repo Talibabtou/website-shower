@@ -6,11 +6,17 @@ Find TypeScript type and constant drift before it turns into a habit.
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Works with agents](https://img.shields.io/badge/agents-Codex%20%7C%20OpenCode%20%7C%20OpenClaw%20%7C%20Copilot%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Cline-lightgrey)
 
-`types-constants-audit` is a read-only agent skill for auditing where types, literal unions, enum-like values, constants, and magic values live in a web repo. It helps an agent answer one practical question:
+`types-constants-audit` is evolving into **Website Shower**, a read-only website maintenance audit skill. The first stable module audits where types, literal unions, enum-like values, constants, and magic values live in a web repo. It helps an agent answer one practical question:
 
 > Should this contract be inline, feature-local, app-global, shared, or deleted?
 
 The skill ships with a small Bash scanner so agents can quickly map candidate files and repeated patterns, then use the references to decide what is actually worth reporting.
+
+Website Shower's long-term workflow is:
+
+```text
+Multi Audit -> TODO Report -> Human Permission -> Cleanup Work
+```
 
 ## What It Catches
 
@@ -52,6 +58,18 @@ From this repo:
 
 ```bash
 scripts/scan-types-constants.sh /path/to/repo
+```
+
+To gather candidates from all currently available modules:
+
+```bash
+scripts/scan-website-shower.sh /path/to/repo
+```
+
+The unused-code module first looks for `fallow` in the audited repo's `node_modules/.bin`, then for a globally available `fallow`. If unavailable, it falls back to a simpler `rg` scan for exported symbols to usage-check. To allow `npx` resolution, run:
+
+```bash
+FALLOW_USE_NPX=1 scripts/scan-unused-code.sh /path/to/repo
 ```
 
 For monorepos, scan the root only for orientation, then narrow the target:
@@ -140,9 +158,13 @@ opencode.json                    # OpenCode project config
 .kiro/steering/                  # Kiro steering rule
 .agents/rules/                   # generic agent rule
 references/audit-heuristics.md   # signal vs noise rules
+references/audit-orchestrator.md # multi-module report coordination
 references/placement-rules.md    # inline/local/global/shared decision rules
 references/report-format.md      # finding format and severity guidance
+references/unused-code.md        # fallow-backed unused-code audit guidance
 scripts/scan-types-constants.sh  # read-only scanner
+scripts/scan-unused-code.sh      # fallow-backed unused-code candidate scanner
+scripts/scan-website-shower.sh   # read-only multi-module scanner
 scripts/install-agent.sh         # copies/links agent adapters
 tests/smoke-test.sh              # fixture regression check
 examples/fixture/                # anonymous scanner fixture

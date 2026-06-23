@@ -11,6 +11,6 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "bash -n scripts/scan-types-constants.sh && bash -n scripts/install-agent.sh && tests/smoke-test.sh"
+    "test": "bash -n scripts/scan-types-constants.sh && bash -n scripts/scan-unused-code.sh && bash -n scripts/scan-website-shower.sh && bash -n scripts/install-agent.sh && tests/smoke-test.sh"
   }
 }

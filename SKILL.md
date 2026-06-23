@@ -7,6 +7,8 @@ description: Audit and organize TypeScript type files, constant files, literal u
 
 Audit TypeScript type and constant organization from repo evidence. Default mode is read-only: produce findings and recommendations, but do not edit files unless the user explicitly asks for fixes.
 
+This skill is the first module of the broader Website Shower workflow. Website Shower coordinates multiple read-only website maintenance audits into a Markdown TODO report. The current stable module is types/constants ownership; unused-code scanning through `fallow` is being introduced as the next module.
+
 ## Workflow
 
 1. Read repo shape first: framework, package manager, app/package layout, feature/domain folders, and existing naming style for `types`, `constants`, `enums`, contracts, and barrels.
@@ -62,6 +64,14 @@ Quote paths with shell-special characters when inspecting files directly, especi
 7. Apply `references/audit-heuristics.md` to separate signal from noise.
 8. Format findings with `references/report-format.md`.
 
+For multi-module candidate gathering, use:
+
+```bash
+scripts/scan-website-shower.sh .
+```
+
+Then use `references/audit-orchestrator.md` to convert scanner output into a checklist report.
+
 ## Core Judgment
 
 - Global only after two unrelated features need it.
@@ -103,7 +113,7 @@ Each finding must include:
 - reason
 - confidence
 
-Use exact file paths and line numbers when available.
+A finding without concrete file paths is not release-quality. Use exact file paths and line numbers when available. If evidence is missing, mark it as a lead and say what path or usage check is still needed.
 
 When unsure, say what evidence is missing instead of guessing. If there are no material findings, say so and mention search limits.
 

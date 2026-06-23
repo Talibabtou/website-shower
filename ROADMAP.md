@@ -35,6 +35,7 @@ Goal: help an agent find TypeScript type and constant organization issues, then 
 - [x] Add example markdown under `examples/`.
 - [x] Add a reusable report template in `examples/report-template.md`.
 - [x] Add a first anonymized example report in `examples/audit-report.md`.
+- [x] Require concrete file-path evidence for release-quality findings.
 
 ## Release Gate: v0.1.0
 
@@ -57,7 +58,7 @@ These tasks decide whether the current skill is genuinely releasable. Do them be
 - [x] Add `docs/release-notes-v0.1.0.md` only after validation is recorded.
 - [x] Install the skill in Codex and run real-repo validation from the installed skill.
 - [x] Run `npm test`.
-- [ ] Review the public repo surface for release:
+- [x] Review the public repo surface for release:
   - `README.md`
   - `SKILL.md`
   - `AGENTS.md`
@@ -65,16 +66,16 @@ These tasks decide whether the current skill is genuinely releasable. Do them be
   - examples
   - tests
   - license
-- [ ] Tag `v0.1.0` after the release gate is complete.
+- [x] Tag `v0.1.0` after the release gate is complete.
 
 ## Real Repo Validation
 
 - [x] Test on a small/clean Next.js app.
 - [x] Test on a feature-heavy React app.
 - [x] Test on a monorepo package.
-- [ ] Optional before `v0.1.0`: test on a messy older repo with global `types.ts`.
-- [ ] Record only behavior-changing misses or false positives.
-- [ ] Stop changing placement rules after two different repos produce no new rule changes.
+- [x] Optional before `v0.1.0`: test on a messy older repo with global `types.ts`.
+- [x] Record only behavior-changing misses or false positives.
+- [x] Stop changing placement rules after two different repos produce no new rule changes.
 
 ## Scope Guardrails
 
@@ -87,7 +88,14 @@ These tasks decide whether the current skill is genuinely releasable. Do them be
 
 Keep v0.1 focused on type and constant drift. After v0.1 is released, expand into a broader website maintenance skill in separate, testable modules. Each module should ship with its own scanner or workflow, example report, validation notes, and optional command.
 
-- [ ] Unused code and stale export workflow, likely using `fallow` as a companion tool instead of rebuilding dead-code analysis.
+Working name: **Website Shower**. This should be an all-in-one read-only website maintenance audit that produces a Markdown checklist report for humans and agents. The workflow should be: multi-audit -> TODO report -> ask human permission -> clean without changing functionality.
+
+- [x] Add first coordination references for Website Shower: `references/audit-orchestrator.md`.
+- [x] Add read-only multi-module candidate scanner: `scripts/scan-website-shower.sh`.
+- [x] Add separate unused-code scanner: `scripts/scan-unused-code.sh`.
+- [x] Add unused-code guidance using `fallow`: `references/unused-code.md`.
+- [ ] Validate the `fallow` unused-code module on a real repo and record false positives.
+- [ ] Convert multi-module scanner output into a first `examples/website-shower-report.md` checklist.
 - [ ] TypeScript migration hygiene: `any`, unsafe casts, duplicate hand-written API types, weak `unknown` bridges, old JS migration leftovers.
 - [ ] React and Next.js habit audit: server/client boundary drift, route constants, metadata duplication, cache/fetch option drift, prop type placement.
 - [ ] Tailwind cleanup audit: config drift, repeated arbitrary values, unused theme tokens, one-off utility patterns that should become design tokens, and class soup in shared components.
