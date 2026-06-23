@@ -3,6 +3,7 @@
 set -uo pipefail
 
 TARGET="${1:-.}"
+MAX_SECTION_LINES="${MAX_SECTION_LINES:-200}"
 
 if ! command -v rg >/dev/null 2>&1; then
   echo "error: ripgrep (rg) is required" >&2
@@ -55,6 +56,13 @@ fi
 TS_GLOBS=(
   --glob '*.ts'
   --glob '*.tsx'
+  --glob '!*.d.ts'
+  --glob '!**/*.d.ts'
+  --glob '!**/__generated__/**'
+  --glob '!**/generated/**'
+  --glob '!**/idl.ts'
+  --glob '!**/idl-types.ts'
+  --glob '!**/*Idl.ts'
 )
 
 section() {
@@ -71,6 +79,24 @@ files() {
   else
     rg --files "$TARGET" || true
   fi
+}
+
+ts_files() {
+  if [ "${#RG_FILES_COMMON[@]}" -gt 0 ]; then
+    rg --files "${RG_FILES_COMMON[@]}" "${TS_GLOBS[@]}" "$TARGET" || true
+  else
+    rg --files "${TS_GLOBS[@]}" "$TARGET" || true
+  fi
+}
+
+limit_output() {
+  awk -v max="$MAX_SECTION_LINES" '
+    NR <= max { print }
+    NR == max + 1 {
+      printf "... truncated after %d lines; narrow the target path for more detail.\n", max
+      exit
+    }
+  '
 }
 
 section "Target"
@@ -102,11 +128,10 @@ for dir in src app pages features domains packages apps; do
 done
 
 section "Candidate type and constant files"
-files | rg '(^|/)(types|constants|contracts|enums|status|statuses|roles|variants|modes|config)\.(ts|tsx)$' || true
+files | rg '(^|/)(types|constants|contracts|enums|status|statuses|roles|variants|modes|config)\.(ts|tsx)$' | limit_output || true
 
 section "Large candidate files"
-files |
-  rg '\.(ts|tsx)$' |
+ts_files |
   while IFS= read -r file; do
     lines="$(wc -l < "$file" 2>/dev/null | tr -d ' ')"
     case "$lines" in
@@ -120,25 +145,26 @@ files |
   head -n 30
 
 section "Type aliases"
-scan '(^|export[[:space:]]+)type[[:space:]]+[A-Za-z0-9_]+[[:space:]]*='
+scan '(^|export[[:space:]]+)type[[:space:]]+[A-Za-z0-9_]+[[:space:]]*=' | limit_output
 
 section "Interfaces"
-scan '(^|export[[:space:]]+)interface[[:space:]]+[A-Za-z0-9_]+'
+scan '(^|export[[:space:]]+)interface[[:space:]]+[A-Za-z0-9_]+' | limit_output
 
 section "Enum declarations"
-scan '(^|export[[:space:]]+)?enum[[:space:]]+[A-Za-z0-9_]+'
+scan '(^|export[[:space:]]+)?enum[[:space:]]+[A-Za-z0-9_]+' | limit_output
 
 section "as const values"
-scan 'as const'
+scan 'as const' | limit_output
 
 section "Uppercase constants"
 scan '(^|export[[:space:]]+)?const[[:space:]]+[A-Z][A-Z0-9_]+[[:space:]]*=' |
   rg -v '=[[:space:]]*(async[[:space:]]*)?\(' |
-  rg -v 'export[[:space:]]+const[[:space:]]+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)[[:space:]]*=' ||
+  rg -v 'export[[:space:]]+const[[:space:]]+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)[[:space:]]*=' |
+  limit_output ||
   true
 
 section "Imports from type/constant barrels"
-scan 'from[[:space:]]+["'\''][^"'\'']*(types|constants|contracts|enums|status|statuses|roles|variants|modes|config)[^"'\'']*["'\'']'
+scan 'from[[:space:]]+["'\''][^"'\'']*(types|constants|contracts|enums|status|statuses|roles|variants|modes|config)[^"'\'']*["'\'']' | limit_output
 
 literal_tmp="$(mktemp "${TMPDIR:-/tmp}/types-constants-literals.XXXXXX")"
 trap 'rm -f "$literal_tmp"' EXIT
@@ -167,10 +193,10 @@ awk -F: '
       print "No repeated watched literals found."
     }
   }
-' "$literal_tmp"
+' "$literal_tmp" | limit_output
 
 section "Likely literal unions"
-scan '["'\''][A-Za-z0-9_-]+["'\''][[:space:]]*\|[[:space:]]*["'\''][A-Za-z0-9_-]+["'\'']'
+scan '["'\''][A-Za-z0-9_-]+["'\''][[:space:]]*\|[[:space:]]*["'\''][A-Za-z0-9_-]+["'\'']' | limit_output
 
 symbol_tmp="$(mktemp "${TMPDIR:-/tmp}/types-constants-symbols.XXXXXX")"
 const_tmp="$(mktemp "${TMPDIR:-/tmp}/types-constants-consts.XXXXXX")"
@@ -204,7 +230,7 @@ awk -F: '
       print "No repeated type/interface names found."
     }
   }
-' "$symbol_tmp"
+' "$symbol_tmp" | limit_output
 
 scan '(^|export[[:space:]]+)?const[[:space:]]+[A-Z][A-Z0-9_]+[[:space:]]*=[[:space:]]*(["'\''][^"'\'']+["'\'']|[0-9][0-9_]*(\.[0-9]+)?)[;[:space:]]*$' > "$const_tmp"
 
@@ -232,12 +258,13 @@ awk -F: '
       print "No repeated primitive constant values found."
     }
   }
-' "$const_tmp"
+' "$const_tmp" | limit_output
 
 section "Exported uppercase constants to usage-check"
 scan 'export[[:space:]]+const[[:space:]]+[A-Z][A-Z0-9_]+[[:space:]]*=' |
   rg -v '=[[:space:]]*(async[[:space:]]*)?\(' |
-  rg -v 'export[[:space:]]+const[[:space:]]+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)[[:space:]]*=' ||
+  rg -v 'export[[:space:]]+const[[:space:]]+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)[[:space:]]*=' |
+  limit_output ||
   true
 
 cat <<'NOTE'

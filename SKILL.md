@@ -5,27 +5,25 @@ description: Audit and organize TypeScript type files, constant files, literal u
 
 # Types Constants Audit
 
-Use this skill to produce a repo-grounded audit report. Default to read-only inspection: do not edit files unless the user explicitly asks for fixes.
+Audit TypeScript type and constant organization from repo evidence. Default mode is read-only: produce findings and recommendations, but do not edit files unless the user explicitly asks for fixes.
 
 ## Workflow
 
-1. Read repo shape first:
-   - package manager and framework
-   - `src/`, `app/`, `pages/`, `features/`, `domains/`, `packages/`
-   - existing naming style for types, constants, enums, and barrels
-2. Find candidates with `scripts/scan-types-constants.sh` when it exists, or with `rg` manually.
+1. Read repo shape first: framework, package manager, app/package layout, feature/domain folders, and existing naming style for `types`, `constants`, `enums`, contracts, and barrels.
+2. Run the scanner when available:
 
 ```bash
 scripts/scan-types-constants.sh .
 ```
 
-When running manual searches, let `rg` honor the repo's `.gitignore` first. If the repo has no `.gitignore`, add fallback exclusions for common generated and dependency folders:
+For monorepos, treat a root scan as orientation only, then rerun against one owned target:
 
 ```bash
---glob '!node_modules/**' --glob '!.git/**' --glob '!.next/**' --glob '!.turbo/**' --glob '!.vercel/**' --glob '!dist/**' --glob '!build/**' --glob '!coverage/**'
+scripts/scan-types-constants.sh apps/example-app
+scripts/scan-types-constants.sh packages/example-domain
 ```
 
-Manual candidate searches:
+3. If the scanner is unavailable, use `rg` manually and let repo ignore files apply first:
 
 ```bash
 rg --files | rg '(^|/)(types|constants|contracts|enums|status|statuses|roles|variants|config)\.(ts|tsx)$'
@@ -36,14 +34,20 @@ rg "const [A-Z0-9_]+\\s*=" .
 rg "'(draft|published|pending|queued|done|approved|rejected|active|inactive|failed|admin|moderator|user|owner|viewer|editor|success|error|warning|info)'" .
 ```
 
-3. For each candidate, inspect usage before recommending movement:
+If the repo has no ignore files, add fallback exclusions:
+
+```bash
+--glob '!node_modules/**' --glob '!.git/**' --glob '!.next/**' --glob '!.turbo/**' --glob '!.vercel/**' --glob '!dist/**' --glob '!build/**' --glob '!coverage/**'
+```
+
+4. Inspect usage before recommending movement:
 
 ```bash
 rg "\\bSymbolName\\b" .
 rg "from ['\"].*(types|constants|enums)" .
 ```
 
-4. Classify each issue:
+5. Classify each issue:
    - duplicated type shape
    - duplicated literal union
    - repeated magic string or number
@@ -52,22 +56,18 @@ rg "from ['\"].*(types|constants|enums)" .
    - fake reuse that should stay inline
    - constant that hurts readability
    - drifted local contract that should use an existing owner
-5. Apply placement rules from `references/placement-rules.md` when the location is not obvious.
-6. Format findings with `references/report-format.md`.
+6. Apply `references/placement-rules.md` for placement decisions.
+7. Apply `references/audit-heuristics.md` to separate signal from noise.
+8. Format findings with `references/report-format.md`.
 
 ## Core Judgment
 
-Global only after two unrelated features need it.
-
-Feature-local when one product area owns it.
-
-Inline when used once, fake-reused, or clearer as a literal.
-
-Delete stale exports before moving code.
-
-Do not turn readable literals into named constants just to remove all strings. `aria-label="Close"`, `type="button"`, route segment names, HTTP method strings, and test names often read better inline.
-
-Repeated names are leads, not findings. `Props`, CVA `default` variants, JSX labels, and local UI option strings can be legitimate. Confirm drift by checking shape, ownership, and usage.
+- Global only after two unrelated features need it.
+- Feature-local when one product area owns it.
+- Inline when used once, fake-reused, or clearer as a literal.
+- Delete stale exports before moving code.
+- Repeated names, literals, and primitive values are leads, not findings. Confirm shape, ownership, and usage.
+- Raw literals are strongest when the repo already has an owning constant or union and nearby code drifts from it.
 
 ## What To Report
 
@@ -83,11 +83,11 @@ Prioritize findings that reduce confusion:
 - repeated status/team/result unions that cross Redux, hooks, and UI
 
 Skip low-value noise:
-- one-off JSX labels
-- test fixture strings
-- values dictated by external APIs, unless duplicated wrappers drift
-- CSS class names in components using utility CSS
-- tiny local aliases that improve a gnarly signature
+- one-off JSX labels, route segments, HTTP method strings, and framework syntax
+- test fixture strings and generated API/IDL/protobuf/GraphQL contract outputs
+- CSS utility classes and local UI variant strings
+- repeated `Props`/`State` names that are file-local
+- repeated primitive values with different semantic owners
 
 ## Report Style
 
@@ -102,7 +102,7 @@ Each finding must include:
 
 Use exact file paths and line numbers when available.
 
-When unsure, say what evidence is missing instead of guessing.
+When unsure, say what evidence is missing instead of guessing. If there are no material findings, say so and mention search limits.
 
 ## Edit Mode
 
@@ -117,7 +117,7 @@ Do not introduce a new shared file if an existing local owner is clearer.
 
 ## Skill Test Fixture
 
-Use `examples/fixture` for scanner smoke testing only. It intentionally uses anonymous names and includes duplicated state types, repeated status/side unions, duplicated event contracts, duplicated local data, and one benign UI `default` literal.
+Use `examples/fixture` for scanner smoke testing only. It intentionally uses anonymous names so agents are not biased by product vocabulary.
 
 ```bash
 scripts/smoke-test.sh
