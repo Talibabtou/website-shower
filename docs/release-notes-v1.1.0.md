@@ -10,6 +10,10 @@ Website Shower v1.1.0 sharpens the audit workflow without changing the read-only
 - Optional `website-shower-report.json` shape for host tools and later reruns.
 - Lightweight lifecycle guidance for `open`, `accepted`, `fixed`, `ignored`, and `false-positive` tasks.
 - Boundary markers such as `client-server`, `external-api`, `package-boundary`, `state-store`, `generated-code`, `env-config`, `auth-session`, `database`, `framework-entrypoint`, and `design-system`.
+- Codex plugin marketplace metadata under `.codex-plugin/`.
+- Codex marketplace manifest under `.agents/plugins/marketplace.json`.
+- Plugin skill entry point under `skills/website-shower/`.
+- `scripts/uninstall-agent.sh` for local adapter cleanup.
 
 ## Kept
 

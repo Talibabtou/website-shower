@@ -237,6 +237,8 @@ Use `references/performance-hygiene.md` before reporting a task. Performance out
 
 `install-agent.sh` installs thin adapters for other agents. The root `SKILL.md` remains canonical; adapter files only point agents back to the same read-only workflow.
 
+`uninstall-agent.sh` removes adapters installed by `install-agent.sh`. Website Shower does not write mode flags, hooks, config files, or background state, so removing the plugin, skill link, or copied rule file is enough.
+
 ## Adapter Sync
 
 `sync-agent-adapters.sh` keeps duplicated project-rule files aligned with `adapters/website-shower-rule.md`.

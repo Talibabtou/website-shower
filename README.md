@@ -153,15 +153,28 @@ scripts/scan-website-shower.sh /path/to/repo/packages/domain
 
 The scanner depends only on `rg` (`ripgrep`) and respects repo ignore files. If no ignore files exist, it falls back to common generated-folder exclusions.
 
-## Install For Codex
+## Install
 
-Clone this repo into your Codex skills directory:
+The target install path is the Codex plugin marketplace. Until the public repo is pushed with the marketplace manifest, use the manual fallback.
+
+### Codex
+
+```bash
+codex plugin marketplace add Talibabtou/website-shower
+codex
+```
+
+Then open `/plugins`, select the Website Shower marketplace, and install Website Shower.
+
+This same install should cover the Codex desktop app after restart.
+
+Manual fallback:
 
 ```bash
 git clone https://github.com/Talibabtou/website-shower.git ~/.codex/skills/website-shower
 ```
 
-Or, from a checkout of this repo:
+From an existing checkout:
 
 ```bash
 scripts/install-agent.sh codex
@@ -173,30 +186,49 @@ Then ask:
 Audit this website repo with Website Shower. Write `website-shower-report.md` with cleanup tasks, file evidence, change risk, and validation steps. Do not edit source files.
 ```
 
-## Install For Other Agents
+### OpenCode
+
+Current supported path:
+
+```bash
+scripts/install-agent.sh opencode /path/to/project
+```
+
+This copies `opencode.json` and `.opencode/` instructions into the target project.
+
+### OpenClaw
+
+After ClawHub publication:
+
+```bash
+clawhub install website-shower
+```
+
+Manual fallback:
+
+```bash
+scripts/install-agent.sh openclaw
+```
+
+This copies `.openclaw/skills/website-shower` into `~/.openclaw/skills/`.
+
+### Cursor, Windsurf, Cline, Kiro, Copilot, And Generic Agents
 
 From a checkout of this repo:
 
 ```bash
-# Project-local adapters
 scripts/install-agent.sh cursor /path/to/project
 scripts/install-agent.sh windsurf /path/to/project
 scripts/install-agent.sh cline /path/to/project
 scripts/install-agent.sh kiro /path/to/project
 scripts/install-agent.sh copilot /path/to/project
 scripts/install-agent.sh agents /path/to/project
-scripts/install-agent.sh opencode /path/to/project
-
-# Skill-directory adapter
-scripts/install-agent.sh openclaw
-
-# Copy all project-local instruction adapters
 scripts/install-agent.sh all-local /path/to/project
 ```
 
-Until this repo has marketplace/plugin distribution, the installer copies or links the instruction files each host already understands. See `docs/agent-portability.md` for the file map.
+The installer copies or links the instruction files each host already understands. See `docs/agent-portability.md` for the file map.
 
-## Other Agents
+### Other Agents
 
 This repo is instruction-first, so it also works in agents that can read Markdown rules.
 
@@ -214,6 +246,19 @@ This repo is instruction-first, so it also works in agents that can read Markdow
 
 See `docs/agent-portability.md` for the adapter map.
 
+## Uninstall
+
+| Host | Command |
+| --- | --- |
+| Codex plugin | `codex plugin remove website-shower` |
+| Codex manual skill | `scripts/uninstall-agent.sh codex` |
+| OpenClaw manual skill | `scripts/uninstall-agent.sh openclaw` |
+| OpenCode local adapter | `scripts/uninstall-agent.sh opencode /path/to/project` |
+| Cursor / Windsurf / Cline / Kiro / Copilot | Delete the copied rule file, or run the matching `scripts/uninstall-agent.sh <agent> /path/to/project` command. |
+| All local adapters | `scripts/uninstall-agent.sh all-local /path/to/project` |
+
+Website Shower does not write mode flags, hooks, config files, or background state. Removing the installed plugin, skill link, or copied rule file is enough.
+
 ## Repo Layout
 
 ```text
@@ -222,6 +267,8 @@ See `docs/agent-portability.md` for the adapter map.
 ├── README.md                   # install and usage guide
 ├── AGENTS.md                   # portable root instructions
 ├── agents/openai.yaml          # Codex UI metadata
+├── .codex-plugin/              # Codex plugin marketplace metadata
+├── skills/website-shower/      # plugin skill entry point
 ├── references/                 # audit judgment rules, one file per module
 │   ├── audit-orchestrator.md
 │   ├── website-map.md

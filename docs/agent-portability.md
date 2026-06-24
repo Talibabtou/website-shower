@@ -6,6 +6,8 @@ Website Shower is an instruction-first skill distribution. The canonical behavio
 
 | Host | Files | Notes |
 | --- | --- | --- |
+| Codex plugin marketplace | `.agents/plugins/marketplace.json` | Lets Codex add this GitHub repo as a plugin marketplace. |
+| Codex plugin | `.codex-plugin/plugin.json`, `skills/website-shower/SKILL.md`, `SKILL.md`, `references/`, `scripts/` | Installable from the marketplace entry. |
 | Codex skill | `SKILL.md`, `agents/openai.yaml`, `references/`, `scripts/` | Run `scripts/install-agent.sh codex` or clone into `~/.codex/skills/website-shower`. |
 | Codex / CodeWhale style agents | `AGENTS.md` | Run `scripts/install-agent.sh agents <project>`. |
 | OpenCode | `opencode.json`, `.opencode/instructions/website-shower.md` | Run `scripts/install-agent.sh opencode <project>`. |

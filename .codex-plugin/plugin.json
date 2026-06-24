@@ -1,0 +1,39 @@
+{
+  "name": "website-shower",
+  "version": "1.1.0",
+  "description": "Read-only website maintenance audit that turns repo signals into an approval-ready cleanup checklist.",
+  "author": {
+    "name": "Talib Abtou",
+    "url": "https://github.com/Talibabtou"
+  },
+  "homepage": "https://github.com/Talibabtou/website-shower",
+  "repository": "https://github.com/Talibabtou/website-shower",
+  "license": "MIT",
+  "keywords": [
+    "website-maintenance",
+    "cleanup-audit",
+    "code-maintenance",
+    "repo-hygiene",
+    "typescript",
+    "nextjs"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Website Shower",
+    "shortDescription": "Read-only website cleanup audit",
+    "longDescription": "Maps a website repo, runs read-only maintenance scanners, and writes a grouped cleanup checklist with evidence, boundaries, change risk, and validation steps.",
+    "developerName": "Talib Abtou",
+    "category": "Productivity",
+    "capabilities": [
+      "Instructions",
+      "Scripts"
+    ],
+    "websiteURL": "https://github.com/Talibabtou/website-shower",
+    "defaultPrompt": [
+      "Audit this website repo with Website Shower.",
+      "Write website-shower-report.md with inspected scope, grouped cleanup tasks, file evidence, boundary markers when useful, change risk, and validation steps.",
+      "Do not edit source files."
+    ],
+    "brandColor": "#0f766e"
+  }
+}
