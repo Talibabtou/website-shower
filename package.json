@@ -1,16 +1,18 @@
 {
-  "name": "types-constants-audit",
-  "version": "0.1.0",
+  "name": "website-shower",
+  "version": "1.0.0",
   "description": "Read-only AI skill for website maintenance audits.",
   "keywords": [
     "ai-skill",
     "codex-skill",
-    "typescript",
+    "website-maintenance",
+    "cleanup-audit",
+    "ai-agent",
     "code-maintenance",
     "repo-hygiene"
   ],
   "license": "MIT",
   "scripts": {
-    "test": "bash -n scripts/scan-file-tree-hygiene.sh && bash -n scripts/scan-monorepo-ownership.sh && bash -n scripts/scan-types-constants.sh && bash -n scripts/scan-unused-code.sh && bash -n scripts/scan-typescript-hygiene.sh && bash -n scripts/scan-react-next-habits.sh && bash -n scripts/scan-tailwind-cleanup.sh && bash -n scripts/scan-component-hygiene.sh && bash -n scripts/scan-api-contracts.sh && bash -n scripts/scan-data-fetching-hygiene.sh && bash -n scripts/scan-state-domain-contracts.sh && bash -n scripts/scan-naming-drift.sh && bash -n scripts/scan-dependency-hygiene.sh && bash -n scripts/scan-performance-hygiene.sh && bash -n scripts/scan-website-shower.sh && bash -n scripts/install-agent.sh && tests/smoke-test.sh"
+    "test": "bash -n scripts/scan-file-tree-hygiene.sh && bash -n scripts/scan-monorepo-ownership.sh && bash -n scripts/scan-typescript-hygiene.sh && bash -n scripts/scan-react-next-habits.sh && bash -n scripts/scan-tailwind-cleanup.sh && bash -n scripts/scan-component-hygiene.sh && bash -n scripts/scan-api-contracts.sh && bash -n scripts/scan-data-fetching-hygiene.sh && bash -n scripts/scan-state-domain-contracts.sh && bash -n scripts/scan-naming-drift.sh && bash -n scripts/scan-dependency-hygiene.sh && bash -n scripts/scan-performance-hygiene.sh && bash -n scripts/scan-types-constants.sh && bash -n scripts/scan-unused-code.sh && bash -n scripts/scan-website-shower.sh && bash -n scripts/install-agent.sh && bash -n scripts/sync-agent-adapters.sh && scripts/sync-agent-adapters.sh --check && tests/smoke-test.sh"
   }
 }

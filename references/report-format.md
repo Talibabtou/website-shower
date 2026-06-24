@@ -4,6 +4,8 @@ Lead with findings. Omit empty sections.
 
 Website Shower reports should end as a Markdown checklist. Classic numbered findings are still useful for type-only audits, but the multi-module report should produce tasks a human or agent can approve one by one.
 
+Default artifact: write the final checklist to `website-shower-report.md` at the target repo root when file writes are available. If the user asks for chat-only output or the session is read-only, return the same report in chat and say no file was written.
+
 ## Structure
 
 ```md
@@ -11,7 +13,7 @@ Findings
 
 1. `SymbolName` duplicated across unrelated features
    Severity: medium
-   Confidence: high
+   Evidence: high
    Current:
    - `path/file.ts:12`
    - `path/other.ts:8`
@@ -72,7 +74,7 @@ Acceptable lead:
 
 ```md
 Evidence missing:
-- Need exact worker and hook file paths before this can be high confidence.
+- Need exact worker and hook file paths before this can be high evidence.
 ```
 
 ## Good Recommendation
@@ -123,9 +125,18 @@ If there are no findings, say no material issues found and mention search limits
 Use this shape for Website Shower reports:
 
 ```md
+Report mode: read-only. Edits need a separate approval or follow-up request.
+
+Commands used:
+- `MAX_SECTION_LINES=300 scripts/scan-website-shower.sh .`
+- focused `rg` checks for reported tasks
+- unused-code checker used, or fallback used
+
+### Types And Constants
+
 - [ ] WS-001 Short action title
-  Module: types-constants
-  Confidence: high
+  Evidence: high
+  Change risk: medium
   Files:
   - `src/example.ts:12`
   Why:
@@ -134,5 +145,18 @@ Use this shape for Website Shower reports:
   Name the smallest edit that would fix it.
   Validation:
   Name the smallest check to run after edits.
-  Permission: required
 ```
+
+Change risk means implementation risk, not evidence:
+
+- `low`: docs, naming cleanup, deletion after a clear usage check, or local type-only cleanup.
+- `medium`: import moves, ownership changes, component splits, checker setup, or formatter setup.
+- `high`: API/data parsing, package boundary changes, server/client boundary changes, performance changes, or anything likely to affect runtime behavior.
+
+Evidence means how strong the audit signal is: exact owner and usage proof is `high`, a repeated pattern that still needs context is `medium`, and a weak scanner lead is `low`.
+
+Group tasks by module using headings such as `### Component Hygiene` or `### API Contracts`. Do not repeat `Module:` inside every task.
+
+Add `## Leads Ignored` when scanner output was noisy, a dirty repo produced many candidates, or any module had plausible false positives. Name the reason briefly, for example framework entrypoint, generated output, already-clean setup, public export, or weak fallback-only evidence.
+
+Keep "already clean" observations out of the checklist unless they need an action. Put them in summary notes instead.

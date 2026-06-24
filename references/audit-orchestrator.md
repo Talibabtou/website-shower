@@ -5,7 +5,7 @@ Website Shower is a read-only multi-audit workflow for website repositories.
 The intended flow:
 
 ```text
-multi-audit -> TODO report -> human permission -> cleanup work
+multi-audit -> checklist report -> approval -> cleanup work
 ```
 
 ## Current Modules
@@ -100,30 +100,35 @@ Read scanner output in the same order. Use early sections to reduce false positi
 
 The final report must be a Markdown checklist that can be read by a human or another agent.
 
+Default artifact: write it to `website-shower-report.md` at the target repo root when writes are available. This is the audit output; it is not a source cleanup.
+
+The report should include commands/tools used and an ignored-leads section when the scan was noisy. Clean setup observations belong in summary notes, not checklist tasks, unless there is a real action.
+
 Each task must include:
 
 - stable ID, such as `WS-001`
-- module, such as `types-constants` or `unused-code`
+- module section heading, such as `### Types And Constants` or `### Unused Code`
 - task title
-- confidence
+- evidence
 - exact file paths, preferably line numbers
 - reason
 - safe action
 - required validation
-- permission status
+- implementation risk
 
 Example:
 
 ```md
+### Types And Constants
+
 - [ ] WS-001 `WorkItem` duplicated between worker and hook
-  Module: types-constants
-  Confidence: high
+  Evidence: high
+  Change risk: medium
   Files:
   - `src/workers/example.worker.ts:12`
   - `src/features/example/useExample.ts:8`
   Safe action:
   Move the message contract to `src/workers/example-model.ts` and import it from both sides.
-  Permission: required
 ```
 
 ## Rules

@@ -64,5 +64,5 @@ cat <<'NOTE'
 
 # Notes
 This orchestrator gathers module outputs only. It does not decide final cleanup tasks.
-Convert these candidates into a checklist report with concrete paths, confidence, and human approval status before editing.
+Convert these candidates into a checklist report with concrete paths, evidence, change risk, and validation before editing.
 NOTE

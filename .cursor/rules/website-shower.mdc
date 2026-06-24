@@ -1,3 +1,8 @@
+---
+description: Read-only Website Shower cleanup audit.
+alwaysApply: false
+---
+
 # Website Shower
 
 Use this rule when auditing website repo hygiene with Website Shower: file tree shape, monorepo ownership, TypeScript/checker setup, React/Next habits, Tailwind/CSS cleanup, components, API/data contracts, state/domain contracts, naming drift, dependencies, performance, types/constants, and unused-code leads.

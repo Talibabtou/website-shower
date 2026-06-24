@@ -29,7 +29,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh /path/to/repo
 
 The order is deliberate. File-tree shape gives the first map of apps, packages, feature folders, generated output, and junk drawers. Monorepo ownership clarifies public package boundaries before later modules judge imports and shared contracts. Checker setup and framework shape change how later leads should be judged. UI, API, data, state, naming, dependency, and performance sections identify the main owners before type placement work. Unused-code leads come last because framework entrypoints, generated boundaries, public exports, and route conventions can make raw usage counts noisy.
 
-The global scanner only gathers candidates. Convert the output into a checklist report with file paths, confidence, safe action, validation, and permission status before editing anything.
+The global scanner only gathers candidates. Convert the output into a checklist report with file paths, evidence, change risk, safe action, and validation before editing anything.
 
 ## Module Scripts
 
@@ -222,4 +222,20 @@ Use `references/performance-hygiene.md` before reporting a task. Performance out
 
 ## Installer
 
-`install-agent.sh` installs thin adapters for other agents. Some paths still use the old `types-constants-audit` compatibility name until the repo/package rename is finished.
+`install-agent.sh` installs thin adapters for other agents. The root `SKILL.md` remains canonical; adapter files only point agents back to the same read-only workflow.
+
+## Adapter Sync
+
+`sync-agent-adapters.sh` keeps duplicated project-rule files aligned with `adapters/website-shower-rule.md`.
+
+Use it after changing the compact adapter wording:
+
+```bash
+scripts/sync-agent-adapters.sh
+```
+
+CI/test mode verifies the generated adapters are current:
+
+```bash
+scripts/sync-agent-adapters.sh --check
+```

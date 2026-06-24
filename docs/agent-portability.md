@@ -6,15 +6,15 @@ Website Shower is an instruction-first skill distribution. The canonical behavio
 
 | Host | Files | Notes |
 | --- | --- | --- |
-| Codex skill | `SKILL.md`, `agents/openai.yaml`, `references/`, `scripts/` | Run `scripts/install-agent.sh codex` or clone into `~/.codex/skills/types-constants-audit` until the compatibility path is renamed. |
+| Codex skill | `SKILL.md`, `agents/openai.yaml`, `references/`, `scripts/` | Run `scripts/install-agent.sh codex` or clone into `~/.codex/skills/website-shower`. |
 | Codex / CodeWhale style agents | `AGENTS.md` | Run `scripts/install-agent.sh agents <project>`. |
-| OpenCode | `opencode.json`, `.opencode/instructions/types-constants-audit.md` | Run `scripts/install-agent.sh opencode <project>`. The file path is still the compatibility name. |
-| OpenClaw | `.openclaw/skills/types-constants-audit/SKILL.md` | Run `scripts/install-agent.sh openclaw`. The root `SKILL.md` remains canonical for this repo. |
+| OpenCode | `opencode.json`, `.opencode/instructions/website-shower.md` | Run `scripts/install-agent.sh opencode <project>`. |
+| OpenClaw | `.openclaw/skills/website-shower/SKILL.md` | Run `scripts/install-agent.sh openclaw`. The root `SKILL.md` remains canonical for this repo. |
 | GitHub Copilot | `.github/copilot-instructions.md` | Run `scripts/install-agent.sh copilot <project>`. |
-| Cursor | `.cursor/rules/types-constants-audit.mdc` | Run `scripts/install-agent.sh cursor <project>`. |
-| Windsurf | `.windsurf/rules/types-constants-audit.md` | Run `scripts/install-agent.sh windsurf <project>`. |
-| Cline | `.clinerules/types-constants-audit.md` | Run `scripts/install-agent.sh cline <project>`. |
-| Kiro | `.kiro/steering/types-constants-audit.md` | Run `scripts/install-agent.sh kiro <project>`. |
+| Cursor | `.cursor/rules/website-shower.mdc` | Run `scripts/install-agent.sh cursor <project>`. |
+| Windsurf | `.windsurf/rules/website-shower.md` | Run `scripts/install-agent.sh windsurf <project>`. |
+| Cline | `.clinerules/website-shower.md` | Run `scripts/install-agent.sh cline <project>`. |
+| Kiro | `.kiro/steering/website-shower.md` | Run `scripts/install-agent.sh kiro <project>`. |
 | Generic agents | `SKILL.md` or `AGENTS.md` | Copy the compact rule file or load the full skill. |
 
 ## Installer
@@ -29,16 +29,21 @@ The installer copies project-local instruction adapters into a target project. F
 
 ## Adapter Rule
 
-Keep adapters thin. If a host supports skills, point it at `SKILL.md`, `references/`, and `scripts/`. If a host only supports project instructions, keep its copied rule text aligned with `AGENTS.md`.
+Keep adapters thin. If a host supports skills, point it at `SKILL.md`, `references/`, and `scripts/`. If a host only supports project instructions, generate its copied rule text from `adapters/website-shower-rule.md`.
+
+Run this after changing compact adapter wording:
+
+```bash
+scripts/sync-agent-adapters.sh
+```
 
 Do not duplicate detailed module rules in every adapter. Detailed guidance belongs in:
 
 - `references/audit-heuristics.md`
 - `references/placement-rules.md`
 - `references/report-format.md`
-- `references/unused-code.md`
-- `references/typescript-hygiene.md`
-- `references/react-next-habits.md`
+- `references/audit-orchestrator.md`
+- the module reference needed for the finding being judged
 
 ## Release Rule
 

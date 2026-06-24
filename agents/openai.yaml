@@ -1,4 +1,4 @@
 interface:
   display_name: "Website Shower"
   short_description: "Read-only website cleanup audit that turns repo signals into a checklist."
-  default_prompt: "Audit this website repo with Website Shower. Produce a read-only cleanup checklist with concrete file evidence, confidence, validation steps, and permission status. Do not edit files."
+  default_prompt: "Audit this website repo with Website Shower. Write website-shower-report.md with grouped cleanup tasks, file evidence, change risk, and validation steps. Do not edit source files."

@@ -1,13 +1,15 @@
 ---
-name: types-constants-audit
-description: Audit website repos for file-tree drift, monorepo ownership drift, naming drift, dependency hygiene, TypeScript type and constant drift, unused-code leads, TypeScript escape hatches, React/Next.js habit drift, Tailwind and CSS cleanup, component hygiene, API contract hygiene, data-fetching hygiene, state/domain contract hygiene, performance leads, stale exports, and cleanup tasks. Use when asked for Website Shower, website maintenance audit, cleanup checklist, file-tree hygiene, monorepo ownership, naming drift, dependencies, duplicated types/constants, magic values, unused code, TypeScript hygiene, React/Next habits, Tailwind cleanup, CSS cleanup, component cleanup, API contracts, data fetching, performance, state contracts, domain contracts, or read-only repo cleanup.
+name: website-shower
+description: Read-only website maintenance audit. Creates a cleanup checklist for repo shape, TypeScript, React/Next, Tailwind/CSS, API/data, state/domain, dependencies, performance, duplicated types/constants, and unused-code leads.
 ---
 
 # Website Shower
 
-Audit website maintenance issues from repo evidence. Default mode is read-only: produce findings and recommendations, but do not edit files unless the user explicitly asks for fixes.
+Audit website maintenance issues from repo evidence. Default mode is read-only for source files: produce a report artifact, but do not edit audited source/config files unless the user explicitly asks for fixes.
 
-Website Shower coordinates multiple read-only website maintenance audits into a Markdown TODO report. Current modules cover file-tree hygiene, monorepo ownership, TypeScript hygiene, React/Next.js habits, Tailwind and CSS cleanup, component hygiene, API contracts, data-fetching hygiene, state/domain contracts, naming drift, dependency hygiene, performance hygiene, types/constants ownership, and unused-code leads.
+Website Shower coordinates multiple read-only website maintenance audits into a Markdown checklist report. Current modules cover file-tree hygiene, monorepo ownership, TypeScript hygiene, React/Next.js habits, Tailwind and CSS cleanup, component hygiene, API contracts, data-fetching hygiene, state/domain contracts, naming drift, dependency hygiene, performance hygiene, types/constants ownership, and unused-code leads.
+
+Default artifact: write the final report to `website-shower-report.md` at the target repo root when file writes are available. If the user asks for chat-only output or the session is read-only, return the same report in chat and say no file was written.
 
 ## Workflow
 
@@ -114,6 +116,7 @@ Quote paths with shell-special characters when inspecting files directly, especi
    - `references/audit-heuristics.md`
    - `references/unused-code.md`
 8. Format the final checklist with `references/report-format.md`.
+9. Write `website-shower-report.md` in the target repo root by default. This report file is the audit output, not a source fix. Do not edit existing source/config files unless the user separately approves cleanup work.
 
 ## Core Judgment
 
@@ -166,7 +169,18 @@ Each finding must include:
 - current file(s)
 - recommended action
 - reason
-- confidence
+- evidence
+- change risk for checklist tasks
+
+For Website Shower checklist reports, group tasks under module headings such as `### Component Hygiene` and do not repeat `Module:` inside each task.
+
+Every report should include:
+- commands or tools used
+- the report mode
+- grouped checklist tasks
+- ignored leads when scanner output was noisy or the repo was dirty
+
+Do not turn "already clean" observations into tasks. Put them in the summary unless there is a concrete action.
 
 A finding without concrete file paths is not release-quality. Use exact file paths and line numbers when available. If evidence is missing, mark it as a lead and say what path or usage check is still needed.
 

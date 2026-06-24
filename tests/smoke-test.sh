@@ -48,6 +48,17 @@ assert_contains() {
   fi
 }
 
+assert_not_contains() {
+  local pattern="$1"
+  local file="${2:-$OUTPUT}"
+  if rg --fixed-strings "$pattern" "$file" >/dev/null; then
+    echo "unexpected scanner output: $pattern" >&2
+    echo "--- scanner output ---" >&2
+    cat "$file" >&2
+    exit 1
+  fi
+}
+
 section_line() {
   local pattern="$1"
   local file="$2"
@@ -310,5 +321,15 @@ assert_contains "WS-018 Deduplicate" "$REPORT"
 assert_contains "WS-020 Consolidate preview worker messages" "$REPORT"
 assert_contains "WS-023 Remove stale env helpers" "$REPORT"
 assert_contains "No audited files were changed." "$REPORT"
+assert_contains "Report mode: read-only." "$REPORT"
+assert_contains "### File Tree Hygiene" "$REPORT"
+assert_contains "### Component Hygiene" "$REPORT"
+assert_contains "### API Contracts" "$REPORT"
+assert_contains "### Types And Constants" "$REPORT"
+assert_contains "Change risk: high" "$REPORT"
+assert_contains "Change risk: medium" "$REPORT"
+assert_contains "Change risk: low" "$REPORT"
+assert_not_contains "  Module:" "$REPORT"
+assert_not_contains "Permission: required" "$REPORT"
 
 echo "smoke test ok"

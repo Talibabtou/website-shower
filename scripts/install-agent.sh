@@ -10,17 +10,16 @@ usage() {
   cat <<'USAGE'
 usage: scripts/install-agent.sh <agent> [target-project]
 
-Install Website Shower adapters. Some paths still use the old types-constants-audit
-compatibility name until the package rename is finished.
+Install Website Shower adapters.
 
 Agents:
-  codex       Link this repo into ~/.codex/skills/types-constants-audit
+  codex       Link this repo into ~/.codex/skills/website-shower
   opencode    Copy opencode.json and .opencode/ into the target project
-  openclaw    Copy .openclaw/skills/types-constants-audit into ~/.openclaw/skills/
-  cursor      Copy .cursor/rules/types-constants-audit.mdc into the target project
-  windsurf    Copy .windsurf/rules/types-constants-audit.md into the target project
-  cline       Copy .clinerules/types-constants-audit.md into the target project
-  kiro        Copy .kiro/steering/types-constants-audit.md into the target project
+  openclaw    Copy .openclaw/skills/website-shower into ~/.openclaw/skills/
+  cursor      Copy .cursor/rules/website-shower.mdc into the target project
+  windsurf    Copy .windsurf/rules/website-shower.md into the target project
+  cline       Copy .clinerules/website-shower.md into the target project
+  kiro        Copy .kiro/steering/website-shower.md into the target project
   copilot     Copy .github/copilot-instructions.md into the target project
   agents      Copy AGENTS.md into the target project
   all-local   Install all project-local instruction adapters into the target project
@@ -54,11 +53,11 @@ copy_dir() {
 install_project_local() {
   copy_file "$ROOT/AGENTS.md" "$TARGET/AGENTS.md"
   copy_file "$ROOT/.github/copilot-instructions.md" "$TARGET/.github/copilot-instructions.md"
-  copy_file "$ROOT/.cursor/rules/types-constants-audit.mdc" "$TARGET/.cursor/rules/types-constants-audit.mdc"
-  copy_file "$ROOT/.windsurf/rules/types-constants-audit.md" "$TARGET/.windsurf/rules/types-constants-audit.md"
-  copy_file "$ROOT/.clinerules/types-constants-audit.md" "$TARGET/.clinerules/types-constants-audit.md"
-  copy_file "$ROOT/.kiro/steering/types-constants-audit.md" "$TARGET/.kiro/steering/types-constants-audit.md"
-  copy_file "$ROOT/.agents/rules/types-constants-audit.md" "$TARGET/.agents/rules/types-constants-audit.md"
+  copy_file "$ROOT/.cursor/rules/website-shower.mdc" "$TARGET/.cursor/rules/website-shower.mdc"
+  copy_file "$ROOT/.windsurf/rules/website-shower.md" "$TARGET/.windsurf/rules/website-shower.md"
+  copy_file "$ROOT/.clinerules/website-shower.md" "$TARGET/.clinerules/website-shower.md"
+  copy_file "$ROOT/.kiro/steering/website-shower.md" "$TARGET/.kiro/steering/website-shower.md"
+  copy_file "$ROOT/.agents/rules/website-shower.md" "$TARGET/.agents/rules/website-shower.md"
   copy_file "$ROOT/opencode.json" "$TARGET/opencode.json"
   copy_dir "$ROOT/.opencode" "$TARGET/.opencode"
 }
@@ -71,8 +70,8 @@ fi
 case "$AGENT" in
   codex)
     mkdir -p "$HOME/.codex/skills"
-    ln -sfn "$ROOT" "$HOME/.codex/skills/types-constants-audit"
-    printf 'linked %s\n' "$HOME/.codex/skills/types-constants-audit"
+    ln -sfn "$ROOT" "$HOME/.codex/skills/website-shower"
+    printf 'linked %s\n' "$HOME/.codex/skills/website-shower"
     ;;
   opencode)
     copy_file "$ROOT/opencode.json" "$TARGET/opencode.json"
@@ -80,19 +79,19 @@ case "$AGENT" in
     ;;
   openclaw)
     mkdir -p "$HOME/.openclaw/skills"
-    copy_dir "$ROOT/.openclaw/skills/types-constants-audit" "$HOME/.openclaw/skills/types-constants-audit"
+    copy_dir "$ROOT/.openclaw/skills/website-shower" "$HOME/.openclaw/skills/website-shower"
     ;;
   cursor)
-    copy_file "$ROOT/.cursor/rules/types-constants-audit.mdc" "$TARGET/.cursor/rules/types-constants-audit.mdc"
+    copy_file "$ROOT/.cursor/rules/website-shower.mdc" "$TARGET/.cursor/rules/website-shower.mdc"
     ;;
   windsurf)
-    copy_file "$ROOT/.windsurf/rules/types-constants-audit.md" "$TARGET/.windsurf/rules/types-constants-audit.md"
+    copy_file "$ROOT/.windsurf/rules/website-shower.md" "$TARGET/.windsurf/rules/website-shower.md"
     ;;
   cline)
-    copy_file "$ROOT/.clinerules/types-constants-audit.md" "$TARGET/.clinerules/types-constants-audit.md"
+    copy_file "$ROOT/.clinerules/website-shower.md" "$TARGET/.clinerules/website-shower.md"
     ;;
   kiro)
-    copy_file "$ROOT/.kiro/steering/types-constants-audit.md" "$TARGET/.kiro/steering/types-constants-audit.md"
+    copy_file "$ROOT/.kiro/steering/website-shower.md" "$TARGET/.kiro/steering/website-shower.md"
     ;;
   copilot)
     copy_file "$ROOT/.github/copilot-instructions.md" "$TARGET/.github/copilot-instructions.md"
