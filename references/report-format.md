@@ -6,6 +6,8 @@ Website Shower reports should end as a Markdown checklist. Classic numbered find
 
 Default artifact: write the final checklist to `website-shower-report.md` at the target repo root when file writes are available. If the user asks for chat-only output or the session is read-only, return the same report in chat and say no file was written.
 
+Optional artifact: write `website-shower-report.json` only when requested. Do not make JSON the default report.
+
 ## Structure
 
 ```md
@@ -132,11 +134,18 @@ Commands used:
 - focused `rg` checks for reported tasks
 - unused-code checker used, or fallback used
 
+Inspected scope:
+- App roots/routes: `src/app`, `src/pages`, or selected app/package root
+- Feature/domain roots: `src/features`, `src/components`, `src/lib`, `src/state`, or repo equivalents
+- API/data boundaries: route handlers, API clients, data hooks, schemas, generated contracts
+- Tests/generated: test folders checked; generated output skipped or treated as source-of-truth output
+
 ### Types And Constants
 
 - [ ] WS-001 Short action title
   Evidence: high
   Change risk: medium
+  Boundaries: external-api, client-server
   Files:
   - `src/example.ts:12`
   Why:
@@ -147,6 +156,14 @@ Commands used:
   Name the smallest check to run after edits.
 ```
 
+Unchecked boxes mean `open`. Avoid repeating `Status: open` on every new task. Add lifecycle notes only when a task is revisited:
+
+- `[ ]`: open
+- `[x]`: fixed or otherwise closed, with a note
+- `Lifecycle: accepted`
+- `Lifecycle: ignored`
+- `Lifecycle: false-positive`
+
 Change risk means implementation risk, not evidence:
 
 - `low`: docs, naming cleanup, deletion after a clear usage check, or local type-only cleanup.
@@ -155,8 +172,55 @@ Change risk means implementation risk, not evidence:
 
 Evidence means how strong the audit signal is: exact owner and usage proof is `high`, a repeated pattern that still needs context is `medium`, and a weak scanner lead is `low`.
 
+Boundaries are optional tags that explain why validation matters. Use comma-separated values such as `external-api`, `client-server`, `package-boundary`, `state-store`, `generated-code`, `env-config`, `auth-session`, `database`, `local-storage`, `framework-entrypoint`, or `design-system`.
+
 Group tasks by module using headings such as `### Component Hygiene` or `### API Contracts`. Do not repeat `Module:` inside every task.
 
 Add `## Leads Ignored` when scanner output was noisy, a dirty repo produced many candidates, or any module had plausible false positives. Name the reason briefly, for example framework entrypoint, generated output, already-clean setup, public export, or weak fallback-only evidence.
 
 Keep "already clean" observations out of the checklist unless they need an action. Put them in summary notes instead.
+
+## Optional JSON Shape
+
+Use this compact schema when a user or host asks for machine-readable output:
+
+```json
+{
+  "schemaVersion": "website-shower-report/v1",
+  "mode": "read-only",
+  "target": ".",
+  "commandsUsed": ["MAX_SECTION_LINES=300 scripts/scan-website-shower.sh ."],
+  "inspectedScope": {
+    "appRoots": ["src/app"],
+    "featureRoots": ["src/features", "src/components"],
+    "apiBoundaries": ["src/app/api", "src/lib/api"],
+    "stateRoots": ["src/state"],
+    "tests": ["tests"],
+    "generatedSkipped": ["src/generated"]
+  },
+  "tasks": [
+    {
+      "id": "WS-001",
+      "module": "types-constants",
+      "title": "Short action title",
+      "status": "open",
+      "evidence": "high",
+      "changeRisk": "medium",
+      "boundaries": ["api", "client-server"],
+      "files": ["src/example.ts:12"],
+      "why": "Explain the drift or deletion risk.",
+      "safeAction": "Name the smallest edit that would fix it.",
+      "validation": ["pnpm run typecheck"]
+    }
+  ],
+  "ignoredLeads": [
+    {
+      "module": "unused-code",
+      "reason": "framework entrypoint",
+      "files": ["src/app/page.tsx"]
+    }
+  ]
+}
+```
+
+Keep JSON values short. Do not include full scanner output.

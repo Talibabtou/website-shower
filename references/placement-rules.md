@@ -118,7 +118,7 @@ Flag a file when it mixes unrelated ownership:
 
 Recommend small splits by owner, not a full taxonomy.
 
-## Confidence
+## Evidence
 
 Use `high` when usages clearly prove owner and action.
 

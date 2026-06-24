@@ -2,11 +2,11 @@
 
 Read-only website cleanup audits for agents that need evidence before edits.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Works with agents](https://img.shields.io/badge/agents-Codex%20%7C%20OpenCode%20%7C%20OpenClaw%20%7C%20Copilot%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Cline-lightgrey)
 
-**Website Shower** is a read-only website maintenance audit skill. It starts with repo shape and package ownership, then checks tooling, framework habits, styling, components, API contracts, data fetching, state/domain contracts, naming drift, dependencies, performance, type and constant ownership, and unused-code leads.
+**Website Shower** is a read-only website maintenance audit skill. It starts with a website map and inspected scope, then checks repo shape, package ownership, tooling, framework habits, styling, components, API contracts, data fetching, state/domain contracts, naming drift, dependencies, performance, type and constant ownership, and unused-code leads.
 
 The audit helps an agent answer one practical question across the repo:
 
@@ -28,6 +28,7 @@ Multi Audit -> Checklist Report -> Approval -> Cleanup Work
 - component, Tailwind, CSS token, data-fetching, and performance cleanup leads
 - naming drift for one concept across `status`, `state`, `phase`, `mode`, `kind`, or `type`
 - dependency drift, stale exports, misleading barrels, and junk-drawer files
+- risky boundaries such as client/server, external API, package, state-store, generated-code, env, auth, database, and design-system ownership
 
 ## What It Does Not Do
 
@@ -41,6 +42,10 @@ Multi Audit -> Checklist Report -> Approval -> Cleanup Work
 Full example: [`examples/website-shower-report.md`](examples/website-shower-report.md)
 
 ```md
+Inspected scope:
+- App roots/routes: `examples/fixture/src/app`
+- API/data boundaries: `examples/fixture/src/app/api`, `examples/fixture/src/features/items`
+
 ### File Tree Hygiene
 
 - [ ] WS-001 Choose one feature folder convention
@@ -212,59 +217,30 @@ See `docs/agent-portability.md` for the adapter map.
 ## Repo Layout
 
 ```text
-SKILL.md                         # Codex skill entry point
-agents/openai.yaml               # Codex UI metadata
-AGENTS.md                        # portable root instructions
-opencode.json                    # OpenCode project config
-.opencode/                       # OpenCode instructions and future commands
-.openclaw/skills/                # OpenClaw skill package
-.github/copilot-instructions.md  # GitHub Copilot instructions
-.cursor/rules/                   # Cursor project rule
-.windsurf/rules/                 # Windsurf project rule
-.clinerules/                     # Cline project rule
-.kiro/steering/                  # Kiro steering rule
-.agents/rules/                   # generic agent rule
-references/audit-heuristics.md   # signal vs noise rules
-references/api-contracts.md      # API contract hygiene guidance
-references/audit-orchestrator.md # multi-module report coordination
-references/component-hygiene.md  # component hygiene guidance
-references/data-fetching-hygiene.md # data-fetching hygiene guidance
-references/dependency-hygiene.md # package dependency hygiene guidance
-references/file-tree-hygiene.md  # repo shape and ownership-boundary guidance
-references/monorepo-ownership.md # workspace and package ownership guidance
-references/naming-drift.md       # domain vocabulary drift guidance
-references/performance-hygiene.md # performance lead guidance
-references/placement-rules.md    # inline/local/global/shared decision rules
-references/report-format.md      # finding and checklist format guidance
-references/react-next-habits.md  # React and Next.js habit guidance
-references/state-domain-contracts.md # state and domain contract guidance
-references/tailwind-cleanup.md   # Tailwind cleanup guidance
-references/typescript-hygiene.md # TypeScript migration and escape-hatch guidance
-references/unused-code.md        # fallow-backed unused-code audit guidance
-scripts/scan-file-tree-hygiene.sh # repo shape candidate scanner
-scripts/scan-monorepo-ownership.sh # monorepo ownership candidate scanner
-scripts/scan-naming-drift.sh     # naming drift candidate scanner
-scripts/scan-types-constants.sh # type and constant candidate scanner
-scripts/scan-api-contracts.sh    # API contract candidate scanner
-scripts/scan-component-hygiene.sh # component candidate scanner
-scripts/scan-data-fetching-hygiene.sh # data-fetching candidate scanner
-scripts/scan-dependency-hygiene.sh # dependency candidate scanner
-scripts/scan-performance-hygiene.sh # performance candidate scanner
-scripts/scan-react-next-habits.sh # React and Next.js candidate scanner
-scripts/scan-state-domain-contracts.sh # state and domain candidate scanner
-scripts/scan-tailwind-cleanup.sh # Tailwind cleanup candidate scanner
-scripts/scan-unused-code.sh      # fallow-backed unused-code candidate scanner
-scripts/scan-typescript-hygiene.sh # TypeScript hygiene candidate scanner
-scripts/scan-website-shower.sh   # read-only multi-module scanner
-scripts/install-agent.sh         # copies/links agent adapters
-scripts/sync-agent-adapters.sh   # syncs generated project-rule adapters
-scripts/README.md                # script order and module notes
-tests/smoke-test.sh              # fixture regression check
-examples/fixture/                # anonymous scanner fixture
-examples/website-shower-report.md # example checklist report
-adapters/website-shower-rule.md  # canonical compact adapter rule
-docs/agent-portability.md        # compatibility notes
-docs/release-notes-v1.0.0.md     # release notes
+.
+├── SKILL.md                    # Codex skill entry point
+├── README.md                   # install and usage guide
+├── AGENTS.md                   # portable root instructions
+├── agents/openai.yaml          # Codex UI metadata
+├── references/                 # audit judgment rules, one file per module
+│   ├── audit-orchestrator.md
+│   ├── website-map.md
+│   ├── report-format.md
+│   └── placement-rules.md
+├── scripts/                    # read-only scanners and installers
+│   ├── scan-website-shower.sh  # global multi-module scan
+│   ├── scan-*.sh               # focused module scans
+│   ├── install-agent.sh
+│   └── README.md               # scan order and module notes
+├── examples/
+│   ├── fixture/                # anonymous regression fixture
+│   └── website-shower-report.md
+├── tests/smoke-test.sh         # fixture regression check
+├── adapters/                   # canonical generated adapter source
+├── docs/                       # portability and release notes
+├── .opencode/                  # OpenCode adapter
+├── .openclaw/skills/           # OpenClaw skill package
+└── .cursor/, .windsurf/, .clinerules/, .kiro/, .agents/, .github/
 ```
 
 ## Development
@@ -275,7 +251,7 @@ Run the smoke test after changing the scanner or fixture:
 npm test
 ```
 
-The v1.0.0 quality bar is a grouped report artifact, generated without source edits, that a human or agent can use for approved cleanup work.
+The v1.1.0 quality bar is a mapped, grouped report artifact, generated without source edits, that a human or agent can use for approved cleanup work.
 
 Custom command folders are intentionally not shipped yet. The current skill has one primary action, so `SKILL.md` plus the scanner is clearer. Commands become useful when there are distinct workflows like `/audit-types`, `/audit-tailwind`, `/audit-unused`, or `/audit-next-habits`.
 

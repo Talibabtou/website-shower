@@ -15,6 +15,15 @@ Report mode: read-only. Edits need a separate approval or follow-up request.
 MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 ```
 
+## Inspected Scope
+
+- App roots/routes: `examples/fixture/src/app`, `examples/fixture/src/app/api`
+- Feature/domain roots: `examples/fixture/src/feature`, `examples/fixture/src/features`, `examples/fixture/src/components`, `examples/fixture/src/ui`, `examples/fixture/src/state`
+- API/data boundaries: route handlers, item feature API client, mock data, worker message contracts
+- State/store boundaries: `examples/fixture/src/state`, `examples/fixture/src/state/feature`
+- Tests/generated: no test folders in fixture; generated output not present
+- Skipped: build output, dependency folders, and repo-ignored files
+
 ## Cleanup Checklist
 
 ### File Tree Hygiene
@@ -51,6 +60,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-003 Stop importing package internals from the app
   Evidence: high
   Change risk: high
+  Boundaries: package-boundary
   Files:
   - `examples/fixture/apps/web/src/useShared.ts:2`
   - `examples/fixture/packages/shared/src/internal.ts:1`
@@ -79,6 +89,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-005 Replace unsafe input escape hatch
   Evidence: medium
   Change risk: high
+  Boundaries: external-api
   Files:
   - `examples/fixture/src/feature/unsafeInput.ts:6`
   - `examples/fixture/src/feature/unsafeInput.ts:7`
@@ -106,6 +117,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-007 Split client behavior out of the route page
   Evidence: high
   Change risk: high
+  Boundaries: client-server, framework-entrypoint
   Files:
   - `examples/fixture/src/app/items/page.tsx:1`
   - `examples/fixture/src/app/items/page.tsx:3`
@@ -136,6 +148,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-009 Replace dynamic Tailwind class construction
   Evidence: high
   Change risk: medium
+  Boundaries: design-system
   Files:
   - `examples/fixture/src/components/MetricCard.tsx:8`
   Why:
@@ -182,6 +195,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-014 Consolidate create-item API contracts
   Evidence: high
   Change risk: high
+  Boundaries: external-api, framework-entrypoint
   Files:
   - `examples/fixture/src/app/api/items/route.ts:3`
   - `examples/fixture/src/app/api/items/route.ts:8`
@@ -198,6 +212,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-015 Validate create-item request body before use
   Evidence: medium
   Change risk: high
+  Boundaries: external-api
   Files:
   - `examples/fixture/src/app/api/items/route.ts:16`
   Why:
@@ -212,6 +227,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-012 Name item data-fetching policy
   Evidence: medium
   Change risk: high
+  Boundaries: external-api, client-server
   Files:
   - `examples/fixture/src/components/DashboardPanel.tsx:20`
   - `examples/fixture/src/features/items/api.ts:15`
@@ -245,6 +261,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-017 Clean package metadata drift
   Evidence: medium
   Change risk: low
+  Boundaries: package-boundary
   Files:
   - `examples/fixture/package.json:6`
   - `examples/fixture/package.json:7`
@@ -281,6 +298,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-018 Deduplicate `WorkItem`
   Evidence: high
   Change risk: medium
+  Boundaries: state-store
   Files:
   - `examples/fixture/src/state/contracts.ts:11`
   - `examples/fixture/src/state/feature/workSlice.ts:3`
@@ -322,6 +340,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - [ ] WS-020 Consolidate preview worker messages
   Evidence: high
   Change risk: high
+  Boundaries: client-server
   Files:
   - `examples/fixture/src/workers/previewWorker.ts:1`
   - `examples/fixture/src/workers/previewWorker.ts:9`

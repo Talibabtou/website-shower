@@ -4,6 +4,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT="$(mktemp "${TMPDIR:-/tmp}/types-constants-smoke.XXXXXX")"
+MAP_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-map-smoke.XXXXXX")"
 FILE_TREE_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-file-tree-smoke.XXXXXX")"
 MONOREPO_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-monorepo-smoke.XXXXXX")"
 UNUSED_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-unused-smoke.XXXXXX")"
@@ -19,9 +20,10 @@ DEPENDENCY_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-dependency-smoke.XXX
 PERFORMANCE_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-performance-smoke.XXXXXX")"
 SHOWER_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-smoke.XXXXXX")"
 REPORT="$ROOT/examples/website-shower-report.md"
-trap 'rm -f "$OUTPUT" "$FILE_TREE_OUTPUT" "$MONOREPO_OUTPUT" "$UNUSED_OUTPUT" "$TS_OUTPUT" "$REACT_OUTPUT" "$TAILWIND_OUTPUT" "$COMPONENT_OUTPUT" "$API_OUTPUT" "$DATA_OUTPUT" "$STATE_OUTPUT" "$NAMING_OUTPUT" "$DEPENDENCY_OUTPUT" "$PERFORMANCE_OUTPUT" "$SHOWER_OUTPUT"' EXIT
+trap 'rm -f "$OUTPUT" "$MAP_OUTPUT" "$FILE_TREE_OUTPUT" "$MONOREPO_OUTPUT" "$UNUSED_OUTPUT" "$TS_OUTPUT" "$REACT_OUTPUT" "$TAILWIND_OUTPUT" "$COMPONENT_OUTPUT" "$API_OUTPUT" "$DATA_OUTPUT" "$STATE_OUTPUT" "$NAMING_OUTPUT" "$DEPENDENCY_OUTPUT" "$PERFORMANCE_OUTPUT" "$SHOWER_OUTPUT"' EXIT
 
 "$ROOT/scripts/scan-types-constants.sh" "$ROOT/examples/fixture" > "$OUTPUT"
+"$ROOT/scripts/scan-website-map.sh" "$ROOT/examples/fixture" > "$MAP_OUTPUT"
 "$ROOT/scripts/scan-file-tree-hygiene.sh" "$ROOT/examples/fixture" > "$FILE_TREE_OUTPUT"
 "$ROOT/scripts/scan-monorepo-ownership.sh" "$ROOT/examples/fixture" > "$MONOREPO_OUTPUT"
 "$ROOT/scripts/scan-unused-code.sh" "$ROOT/examples/fixture" > "$UNUSED_OUTPUT"
@@ -107,6 +109,20 @@ assert_contains "src/ui" "$FILE_TREE_OUTPUT"
 assert_contains "mixed UI folders" "$FILE_TREE_OUTPUT"
 assert_contains "== Route layout leads ==" "$FILE_TREE_OUTPUT"
 assert_contains "app/items/page.tsx" "$FILE_TREE_OUTPUT"
+
+assert_contains "== Website map ==" "$MAP_OUTPUT"
+assert_contains "package.json" "$MAP_OUTPUT"
+assert_contains "tailwind.config.ts" "$MAP_OUTPUT"
+assert_contains "== App roots and packages ==" "$MAP_OUTPUT"
+assert_contains "src/app" "$MAP_OUTPUT"
+assert_contains "apps/web/package.json" "$MAP_OUTPUT"
+assert_contains "== Feature and domain roots ==" "$MAP_OUTPUT"
+assert_contains "src/features" "$MAP_OUTPUT"
+assert_contains "src/state" "$MAP_OUTPUT"
+assert_contains "== API and data boundaries ==" "$MAP_OUTPUT"
+assert_contains "src/app/api" "$MAP_OUTPUT"
+assert_contains "== Tests and stories ==" "$MAP_OUTPUT"
+assert_contains "== Generated and ignored candidates ==" "$MAP_OUTPUT"
 
 assert_contains "== Workspace signals ==" "$MONOREPO_OUTPUT"
 assert_contains "pnpm-workspace.yaml" "$MONOREPO_OUTPUT"
@@ -250,6 +266,7 @@ assert_contains "== Unbounded list render leads ==" "$PERFORMANCE_OUTPUT"
 assert_contains "records.map" "$PERFORMANCE_OUTPUT"
 
 assert_contains "# Website Shower Candidate Scan" "$SHOWER_OUTPUT"
+assert_contains "# Website Map" "$SHOWER_OUTPUT"
 assert_contains "# File Tree Hygiene" "$SHOWER_OUTPUT"
 assert_contains "# Monorepo Ownership" "$SHOWER_OUTPUT"
 assert_contains "# Types And Constants" "$SHOWER_OUTPUT"
@@ -266,6 +283,7 @@ assert_contains "# Dependency Hygiene" "$SHOWER_OUTPUT"
 assert_contains "# Performance Hygiene" "$SHOWER_OUTPUT"
 assert_contains "This orchestrator gathers module outputs only." "$SHOWER_OUTPUT"
 
+website_map_line="$(section_line "# Website Map" "$SHOWER_OUTPUT")"
 file_tree_line="$(section_line "# File Tree Hygiene" "$SHOWER_OUTPUT")"
 monorepo_line="$(section_line "# Monorepo Ownership" "$SHOWER_OUTPUT")"
 typescript_line="$(section_line "# TypeScript Hygiene" "$SHOWER_OUTPUT")"
@@ -278,6 +296,11 @@ naming_line="$(section_line "# Naming Drift" "$SHOWER_OUTPUT")"
 dependency_line="$(section_line "# Dependency Hygiene" "$SHOWER_OUTPUT")"
 performance_line="$(section_line "# Performance Hygiene" "$SHOWER_OUTPUT")"
 types_constants_line="$(section_line "# Types And Constants" "$SHOWER_OUTPUT")"
+if [ "$website_map_line" -ge "$file_tree_line" ]; then
+  echo "website map should run before file-tree hygiene" >&2
+  cat "$SHOWER_OUTPUT" >&2
+  exit 1
+fi
 if [ "$file_tree_line" -ge "$typescript_line" ]; then
   echo "file-tree hygiene should run before TypeScript hygiene" >&2
   cat "$SHOWER_OUTPUT" >&2
@@ -322,6 +345,10 @@ assert_contains "WS-020 Consolidate preview worker messages" "$REPORT"
 assert_contains "WS-023 Remove stale env helpers" "$REPORT"
 assert_contains "No audited files were changed." "$REPORT"
 assert_contains "Report mode: read-only." "$REPORT"
+assert_contains "## Inspected Scope" "$REPORT"
+assert_contains "App roots/routes:" "$REPORT"
+assert_contains "API/data boundaries:" "$REPORT"
+assert_contains "Tests/generated:" "$REPORT"
 assert_contains "### File Tree Hygiene" "$REPORT"
 assert_contains "### Component Hygiene" "$REPORT"
 assert_contains "### API Contracts" "$REPORT"
@@ -329,6 +356,11 @@ assert_contains "### Types And Constants" "$REPORT"
 assert_contains "Change risk: high" "$REPORT"
 assert_contains "Change risk: medium" "$REPORT"
 assert_contains "Change risk: low" "$REPORT"
+assert_contains "Boundaries: package-boundary" "$REPORT"
+assert_contains "Boundaries: client-server, framework-entrypoint" "$REPORT"
+assert_contains "Boundaries: external-api" "$REPORT"
+assert_contains "Boundaries: design-system" "$REPORT"
+assert_contains "Boundaries: state-store" "$REPORT"
 assert_not_contains "  Module:" "$REPORT"
 assert_not_contains "Permission: required" "$REPORT"
 

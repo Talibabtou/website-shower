@@ -12,26 +12,39 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh /path/to/repo
 
 `scan-website-shower.sh` runs modules in this order:
 
-1. `scan-file-tree-hygiene.sh`
-2. `scan-monorepo-ownership.sh`
-3. `scan-typescript-hygiene.sh`
-4. `scan-react-next-habits.sh`
-5. `scan-tailwind-cleanup.sh`
-6. `scan-component-hygiene.sh`
-7. `scan-api-contracts.sh`
-8. `scan-data-fetching-hygiene.sh`
-9. `scan-state-domain-contracts.sh`
-10. `scan-naming-drift.sh`
-11. `scan-dependency-hygiene.sh`
-12. `scan-performance-hygiene.sh`
-13. `scan-types-constants.sh`
-14. `scan-unused-code.sh`
+1. `scan-website-map.sh`
+2. `scan-file-tree-hygiene.sh`
+3. `scan-monorepo-ownership.sh`
+4. `scan-typescript-hygiene.sh`
+5. `scan-react-next-habits.sh`
+6. `scan-tailwind-cleanup.sh`
+7. `scan-component-hygiene.sh`
+8. `scan-api-contracts.sh`
+9. `scan-data-fetching-hygiene.sh`
+10. `scan-state-domain-contracts.sh`
+11. `scan-naming-drift.sh`
+12. `scan-dependency-hygiene.sh`
+13. `scan-performance-hygiene.sh`
+14. `scan-types-constants.sh`
+15. `scan-unused-code.sh`
 
-The order is deliberate. File-tree shape gives the first map of apps, packages, feature folders, generated output, and junk drawers. Monorepo ownership clarifies public package boundaries before later modules judge imports and shared contracts. Checker setup and framework shape change how later leads should be judged. UI, API, data, state, naming, dependency, and performance sections identify the main owners before type placement work. Unused-code leads come last because framework entrypoints, generated boundaries, public exports, and route conventions can make raw usage counts noisy.
+The order is deliberate. Website map names app roots, route systems, feature roots, API/data boundaries, tests, generated output, and package signals first. File-tree shape then adds ownership and junk-drawer context. Monorepo ownership clarifies public package boundaries before later modules judge imports and shared contracts. Checker setup and framework shape change how later leads should be judged. UI, API, data, state, naming, dependency, and performance sections identify the main owners before type placement work. Unused-code leads come last because framework entrypoints, generated boundaries, public exports, and route conventions can make raw usage counts noisy.
 
 The global scanner only gathers candidates. Convert the output into a checklist report with file paths, evidence, change risk, safe action, and validation before editing anything.
 
 ## Module Scripts
+
+### `scan-website-map.sh`
+
+Maps the website before module judgment:
+
+- framework, package, workspace, checker, and styling config signals
+- app roots and route systems
+- feature, domain, UI, lib, server, and state roots
+- API and data boundaries
+- tests, stories, generated folders, migrations, and build output candidates
+
+Use `references/website-map.md` before writing the inspected-scope section. Empty sections matter because they show what was absent or not covered.
 
 ### `scan-file-tree-hygiene.sh`
 

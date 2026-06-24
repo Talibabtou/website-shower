@@ -11,6 +11,7 @@ If the repository checkout includes the root skill files, read:
 
 - `SKILL.md`
 - `references/audit-orchestrator.md`
+- `references/website-map.md`
 - `references/audit-heuristics.md`
 - `references/placement-rules.md`
 - `references/report-format.md`
@@ -24,4 +25,4 @@ scripts/scan-website-shower.sh <target>
 
 For monorepos, scan the root only for orientation, then scan one app/package/domain.
 
-Write `website-shower-report.md` when file writes are available; otherwise return the same report in chat. Report checklist tasks only after confirming shape, ownership, usage, framework rules, and validation. Use module headings, `Evidence`, and `Change risk`. Do not edit audited source/config files unless the user explicitly asks for fixes.
+Write `website-shower-report.md` when file writes are available; otherwise return the same report in chat. Report checklist tasks only after confirming shape, ownership, usage, framework rules, boundaries, and validation. Include inspected scope. Use module headings, `Evidence`, `Change risk`, and boundary markers when useful. Do not edit audited source/config files unless the user explicitly asks for fixes.

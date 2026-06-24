@@ -18,6 +18,9 @@ section "Website Shower Candidate Scan"
 printf 'Target: %s\n' "$TARGET"
 printf 'Mode: read-only candidate gathering\n'
 
+section "Website Map"
+"$ROOT/scripts/scan-website-map.sh" "$TARGET"
+
 section "File Tree Hygiene"
 "$ROOT/scripts/scan-file-tree-hygiene.sh" "$TARGET"
 

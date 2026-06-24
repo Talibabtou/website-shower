@@ -11,9 +11,11 @@ Website Shower coordinates multiple read-only website maintenance audits into a 
 
 Default artifact: write the final report to `website-shower-report.md` at the target repo root when file writes are available. If the user asks for chat-only output or the session is read-only, return the same report in chat and say no file was written.
 
+Optional artifact: if the user asks for machine-readable output, also write `website-shower-report.json`. Keep Markdown as the source humans read.
+
 ## Workflow
 
-1. Read repo shape first: framework, package manager, app/package layout, feature/domain folders, API boundaries, generated folders, and existing checker setup.
+1. Build a website map first: framework, package manager, app/package layout, feature/domain folders, route roots, API/data boundaries, state roots, tests, generated folders, and existing checker setup.
 2. Run the global scanner when available:
 
 ```bash
@@ -28,6 +30,7 @@ scripts/scan-website-shower.sh packages/example-domain
 ```
 
 3. Read scanner output in this order:
+   - Website map: app roots, route roots, feature/domain roots, API/data boundaries, tests/stories, generated folders, package and checker signals.
    - File-tree hygiene: app layout, packages, feature folders, generated folders, junk drawers, route shape.
    - Monorepo ownership: workspace packages, public exports, deep imports, shared package boundaries.
    - TypeScript hygiene: checker setup, `any`, unsafe casts, JS migration leftovers, formatting and lint guardrails.
@@ -98,8 +101,21 @@ Quote paths with shell-special characters when inspecting files directly, especi
    - fake reuse that should stay inline
    - constant that hurts readability
    - drifted local contract that should use an existing owner
-7. Apply the relevant reference before reporting:
+7. Add boundary markers where relevant:
+   - `client-server`
+   - `external-api`
+   - `local-storage`
+   - `env-config`
+   - `auth-session`
+   - `database`
+   - `generated-code`
+   - `package-boundary`
+   - `framework-entrypoint`
+   - `state-store`
+   - `design-system`
+8. Apply the relevant reference before reporting:
    - `references/audit-orchestrator.md`
+   - `references/website-map.md`
    - `references/file-tree-hygiene.md`
    - `references/monorepo-ownership.md`
    - `references/typescript-hygiene.md`
@@ -115,8 +131,11 @@ Quote paths with shell-special characters when inspecting files directly, especi
    - `references/placement-rules.md`
    - `references/audit-heuristics.md`
    - `references/unused-code.md`
-8. Format the final checklist with `references/report-format.md`.
-9. Write `website-shower-report.md` in the target repo root by default. This report file is the audit output, not a source fix. Do not edit existing source/config files unless the user separately approves cleanup work.
+9. Format the final checklist with `references/report-format.md`.
+10. Include an inspected-scope section before findings. Name what was inspected and what was absent or intentionally skipped.
+11. Mark new tasks as open by using unchecked checklist boxes. Do not mark tasks accepted, fixed, ignored, or false-positive unless the user or repo evidence already says so.
+12. If requested, write `website-shower-report.json` using the compact task schema from `references/report-format.md`.
+13. Write `website-shower-report.md` in the target repo root by default. This report file is the audit output, not a source fix. Do not edit existing source/config files unless the user separately approves cleanup work.
 
 ## Core Judgment
 
@@ -177,8 +196,19 @@ For Website Shower checklist reports, group tasks under module headings such as 
 Every report should include:
 - commands or tools used
 - the report mode
+- inspected scope
 - grouped checklist tasks
+- boundary markers when they explain risk or validation
 - ignored leads when scanner output was noisy or the repo was dirty
+
+Only create JSON when asked. Do not replace the Markdown checklist with JSON.
+
+Lifecycle labels for later cleanup passes:
+- `open`: reported task, not yet approved or fixed
+- `accepted`: human agreed this should be fixed
+- `fixed`: follow-up cleanup completed and validated
+- `ignored`: intentionally left as-is
+- `false-positive`: audit lead was wrong after deeper inspection
 
 Do not turn "already clean" observations into tasks. Put them in the summary unless there is a concrete action.
 
